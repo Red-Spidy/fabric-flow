@@ -94,7 +94,10 @@
     "extra": {
         "laravel": {
             "dont-discover": [
-                "fleetbase/ledger-api"
+                "fleetbase/ledger-api",
+                "fleetbase/storefront-api",
+                "fleetbase/fleetops-api",
+                "fleetbase/registry-bridge"
             ]
         }
     },
