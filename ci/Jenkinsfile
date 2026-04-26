@@ -5,6 +5,8 @@ pipeline {
         DOCKER_IMAGE = 'devansh/fabricflow-api'
         DOCKER_TAG = "v${env.BUILD_ID}"
         EC2_USER = 'ubuntu'
+        // Add common macOS Docker paths to Jenkins PATH
+        PATH = "/usr/local/bin:/opt/homebrew/bin:/Users/devanshgupta/.docker/bin:${env.PATH}"
         // Jenkins requires you to configure these credentials in its UI:
         // 'aws-ssh-key' -> SSH Username with Private Key (for connecting to EC2)
     }
