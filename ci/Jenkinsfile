@@ -1,0 +1,84 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_IMAGE = 'devansh/fabricflow-api'
+        DOCKER_TAG = "v${env.BUILD_ID}"
+        EC2_USER = 'ubuntu'
+        // Jenkins requires you to configure these credentials in its UI:
+        // 'aws-ssh-key' -> SSH Username with Private Key (for connecting to EC2)
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code...'
+                checkout scm
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running unit tests...'
+                dir('api') {
+                    // Assuming PHP/Laravel tests
+                    sh '''
+                    if [ -f "composer.json" ]; then
+                        composer install --no-interaction --prefer-dist
+                        # cp .env.example .env
+                        # php artisan key:generate
+                        # php artisan test
+                    fi
+                    '''
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker image for FabricFlow API...'
+                // Using docker-compose to build the image if defined, or raw docker build
+                sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} -t ${DOCKER_IMAGE}:latest -f docker/php/Dockerfile ."
+            }
+        }
+
+        stage('Push to Registry') {
+            steps {
+                echo 'Pushing image to Docker registry...'
+                // Requires configuring 'dockerhub-credentials' in Jenkins
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                    sh '''
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    docker push ${DOCKER_IMAGE}:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                echo 'Deploying to AWS EC2...'
+                // EC2_HOST should ideally be passed as an environment variable or retrieved dynamically
+                // For now, replacing with a script that uses SSH
+                withCredentials([sshUserPrivateKey(credentialsId: 'aws-ssh-key', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+                    sh """
+                    # Disable strict host key checking for automated deployments
+                    export EC2_IP=\$(cat terraform_output_ip.txt || echo 'YOUR_EC2_IP')
+                    
+                    ssh -i \$SSH_KEY -o StrictHostKeyChecking=no \$SSH_USER@\$EC2_IP 'bash -s' < ci/scripts/deploy.sh
+                    """
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo "✅ Deployment Successful!"
+        }
+        failure {
+            echo "❌ Deployment Failed. Please check the logs."
+        }
+    }
+}

@@ -1,0 +1,24 @@
+# ── COPY THIS FILE TO terraform.tfvars AND FILL IN YOUR VALUES ──────────────
+# Never commit terraform.tfvars to git!
+
+aws_region            = "us-east-1"
+project_name          = "fabricflow"
+environment           = "production"
+
+# Your existing EC2 key pair name (created in AWS Console)
+key_pair_name         = "your-key-pair-name"
+
+# Restrict SSH to your home/office IP for security
+allowed_cidr          = "0.0.0.0/0"
+
+# Laravel app key — run: php artisan key:generate --show
+app_key               = "base64:REPLACE_WITH_YOUR_KEY"
+
+# MySQL password
+db_password           = "FabricFlow@S3cur3!"
+
+# S3 bucket name (must be globally unique)
+s3_log_bucket         = "fabricflow-logs-prod-YOURNAME"
+
+# Email for CloudWatch delay alerts
+alert_email           = "your@email.com"

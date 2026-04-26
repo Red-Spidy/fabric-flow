@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>FabricFlow — Supply Chain Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f8fafc;--surface:#ffffff;--card:#ffffff;--card2:#f1f5f9;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --blue:#3b82f6;--indigo:#6366f1;--violet:#8b5cf6;
+  --green:#10b981;--amber:#f59e0b;--red:#ef4444;--cyan:#06b6d4;--pink:#ec4899;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --radius:14px;--sh:0 4px 24px rgba(0,0,0,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ── LOGIN ── */
+#loginPage {
+  display:flex;
+  min-height:100vh;
+}
+.lpB{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:3rem;
+  background: url('fabric_bg.png') center/cover no-repeat;position:relative;overflow:hidden;}
+.lpB::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.85),rgba(248,250,252,0.95));backdrop-filter:blur(8px);z-index:0;}
+.brandLogo{width:85px;height:85px;background:linear-gradient(135deg,#0ea5e9,#3b82f6);border-radius:24px;
+  display:flex;align-items:center;justify-content:center;font-size:2.8rem;margin-bottom:1.5rem;
+  box-shadow:0 15px 35px rgba(59,130,246,.25);z-index:1;}
+.brandName{font-size:3rem;font-weight:900;background:linear-gradient(135deg,#0f172a,#334155);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;z-index:1;letter-spacing:-1px;}
+.brandTag{color:#475569;font-size:1.05rem;font-weight:500;margin-top:.5rem;z-index:1;text-align:center;}
+.brandFeats{display:none;}
+.bf{display:none;}
+.lpF{width:460px;background:var(--surface);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;justify-content:center;padding:3.5rem;}
+.lpT{font-size:1.8rem;font-weight:800;margin-bottom:.4rem;color:var(--text);letter-spacing:-0.5px;}
+.lpS{color:var(--text2);font-size:.9rem;margin-bottom:2.5rem;}
+.fg{margin-bottom:1.2rem;}
+.fg label{font-size:.75rem;font-weight:700;color:var(--text2);display:block;margin-bottom:.4rem;letter-spacing:.05em;text-transform:uppercase;}
+.fg input{width:100%;background:var(--surface);border:1.5px solid var(--border2);color:var(--text);
+  border-radius:10px;padding:.8rem 1rem;font-size:.95rem;font-family:'Inter',sans-serif;transition:.2s;}
+.fg input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(59,130,246,.15);background:var(--surface);}
+.btnLogin{width:100%;padding:.9rem;background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;
+  font-family:'Inter',sans-serif;margin-top:.5rem;transition:.2s;}
+.btnLogin:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(59,130,246,.4);}
+.lpErr{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#f87171;
+  border-radius:8px;padding:.7rem 1rem;font-size:.82rem;margin-top:.75rem;display:none;}
+.dcWrap{margin-top:2rem;padding:1rem;background:rgba(59,130,246,.06);
+  border:1px solid rgba(59,130,246,.15);border-radius:10px;}
+.dcWrap .lbl{font-size:.67rem;color:var(--text3);margin-bottom:.5rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;}
+.dcItem{font-size:.75rem;color:var(--text2);padding:.2rem 0;display:flex;align-items:center;gap:.5rem;}
+.dcItem code{color:var(--blue);background:rgba(59,130,246,.1);padding:1px 6px;border-radius:4px;font-size:.8rem;}
+@media(max-width:768px){#loginPage{flex-direction:column;}.lpB{display:none;}.lpF{width:100%;padding:2rem;}}
+
+/* ── APP SHELL ── */
+#appShell{display:none;height:100vh;overflow:hidden;}
+.layout{display:flex;height:100vh;}
+
+/* ── SIDEBAR ── */
+.sb{width:256px;background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;flex-shrink:0;}
+.sbHead{padding:1.2rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.7rem;}
+.sbLogo{width:34px;height:34px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.sbTitle{font-size:.9rem;font-weight:800;}
+.sbSub{font-size:.6rem;color:var(--text2);}
+.sbUser{padding:.9rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.7rem;}
+.ua{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;flex-shrink:0;}
+.ua-admin{background:rgba(245,158,11,.2);color:#fbbf24;}
+.ua-manufacturer{background:rgba(59,130,246,.2);color:#60a5fa;}
+.ua-buyer{background:rgba(16,185,129,.2);color:#34d399;}
+.uName{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.uRole{font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;}
+.uRole.admin{color:#fbbf24;}.uRole.manufacturer{color:#60a5fa;}.uRole.buyer{color:#34d399;}
+.sbNav{flex:1;overflow-y:auto;padding:.5rem 0;}
+.navSec{padding:.5rem 1.4rem .2rem;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
+.ni{display:flex;align-items:center;gap:.7rem;padding:.58rem 1rem;cursor:pointer;
+  transition:.15s;font-size:.81rem;font-weight:500;color:var(--text2);
+  margin:1px .5rem;border-radius:8px;position:relative;}
+.ni:hover{background:rgba(0,0,0,.04);color:var(--text);}
+.ni.active{background:rgba(59,130,246,.12);color:var(--blue);}
+.ni.active::before{content:'';position:absolute;left:0;height:60%;width:3px;background:var(--blue);border-radius:0 2px 2px 0;}
+.niIco{font-size:.92rem;width:18px;text-align:center;flex-shrink:0;}
+.niBadge{margin-left:auto;background:var(--amber);color:#000;font-size:.57rem;font-weight:800;padding:2px 6px;border-radius:20px;}
+.niBadge.blue{background:var(--blue);color:#fff;}
+.sbFoot{padding:1rem 1.4rem;border-top:1px solid var(--border);}
+.btnLogout{width:100%;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);
+  color:#f87171;border-radius:8px;padding:.5rem;font-size:.78rem;font-weight:600;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:.2s;}
+.btnLogout:hover{background:rgba(239,68,68,.2);}
+
+/* ── MAIN ── */
+.mc{flex:1;overflow-y:auto;background:var(--bg);display:flex;flex-direction:column;}
+.pH{padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);background:var(--surface);
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+.pHl{}
+.pHbc{font-size:.68rem;color:var(--text3);margin-bottom:.18rem;}
+.pHt{font-size:1.25rem;font-weight:800;}
+.pHr{display:flex;gap:.6rem;align-items:center;}
+.cb{padding:1.5rem 1.75rem;flex:1;}
+
+/* ── NOTIFICATION BELL ── */
+.bellBtn{position:relative;width:38px;height:38px;border-radius:10px;background:rgba(0,0,0,.03);
+  border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;transition:.2s;}
+.bellBtn:hover{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);}
+.bellCount{position:absolute;top:-5px;right:-5px;background:var(--red);color:#fff;
+  font-size:.58rem;font-weight:800;min-width:18px;height:18px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;padding:0 4px;
+  border:2px solid var(--surface);animation:bellPop .3s ease;}
+@keyframes bellPop{from{transform:scale(0);}to{transform:scale(1);}}
+
+/* ── NOTIFICATION PANEL ── */
+.notifMask{position:fixed;inset:0;z-index:200;display:none;}
+.notifMask.open{display:block;}
+.notifPanel{position:fixed;top:0;right:0;width:380px;height:100vh;
+  background:var(--surface);border-left:1px solid var(--border);z-index:201;
+  display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;
+  box-shadow:-8px 0 40px rgba(0,0,0,.08);}
+.notifMask.open .notifPanel{transform:translateX(0);}
+.nPHead{padding:1.2rem 1.4rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;}
+.nPTitle{font-size:.95rem;font-weight:700;}
+.nPClose{background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.1rem;}
+.nPClose:hover{color:var(--text);}
+.nPActions{padding:.65rem 1.4rem;border-bottom:1px solid var(--border);display:flex;gap:.5rem;}
+.nPFeed{flex:1;overflow-y:auto;padding:.6rem;}
+.notifItem{background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:.85rem 1rem;margin-bottom:.5rem;cursor:pointer;transition:.2s;position:relative;}
+.notifItem:hover{border-color:var(--border2);}
+.notifItem.unread{border-left:3px solid var(--blue);}
+.notifItem.unread.order{border-left-color:var(--green);}
+.notifItem.unread.stage{border-left-color:var(--violet);}
+.notifItem.unread.aws{border-left-color:var(--amber);}
+.nIco{font-size:1.1rem;margin-right:.5rem;}
+.nMsg{font-size:.8rem;font-weight:500;line-height:1.4;}
+.nTime{font-size:.68rem;color:var(--text3);margin-top:.3rem;}
+.nUnreadDot{width:7px;height:7px;border-radius:50%;background:var(--blue);
+  position:absolute;top:.9rem;right:.9rem;}
+
+/* ── COMPONENTS ── */
+.kpig{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.kc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.2rem 1.3rem;position:relative;overflow:hidden;transition:.2s;}
+.kc:hover{transform:translateY(-2px);box-shadow:var(--sh);}
+.kcBar{height:3px;position:absolute;top:0;left:0;right:0;}
+.kcIco{font-size:1.45rem;margin-bottom:.45rem;}
+.kcVal{font-size:1.85rem;font-weight:900;line-height:1;}
+.kcLbl{font-size:.68rem;color:var(--text2);margin-top:.22rem;}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.1rem;}
+.ph{padding:.85rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.pt{font-size:.83rem;font-weight:700;}
+.pb{padding:1.05rem;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
+@media(max-width:900px){.g2,.g3{grid-template-columns:1fr;}}
+table{width:100%;border-collapse:collapse;}
+th{padding:.52rem .85rem;text-align:left;font-size:.61rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);}
+td{padding:.68rem .85rem;font-size:.79rem;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(59,130,246,.03);}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:20px;font-size:.65rem;font-weight:600;}
+.b-blue{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.2);}
+.b-green{background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.2);}
+.b-amber{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.2);}
+.b-red{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.2);}
+.b-violet{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.2);}
+.b-cyan{background:rgba(6,182,212,.15);color:#22d3ee;border:1px solid rgba(6,182,212,.2);}
+.b-gray{background:rgba(100,116,139,.15);color:#94a3b8;border:1px solid rgba(100,116,139,.2);}
+.btn{padding:.48rem .95rem;border-radius:8px;border:none;font-size:.79rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:.18s;display:inline-flex;align-items:center;gap:.35rem;}
+.btn-p{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;}
+.btn-p:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 4px 14px rgba(59,130,246,.35);}
+.btn-s{background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.2);}
+.btn-s:hover{background:rgba(59,130,246,.2);}
+.btn-g{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.btn-g:hover{border-color:var(--blue);color:var(--blue);}
+.btn-d{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);}
+.btn-d:hover{background:rgba(239,68,68,.2);}
+.btn-warn{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2);}
+.btn-sm{padding:.28rem .7rem;font-size:.72rem;}
+.btn-xs{padding:.18rem .55rem;font-size:.65rem;}
+.field{margin-bottom:.85rem;}
+.field label{font-size:.69rem;font-weight:700;color:var(--text2);display:block;margin-bottom:.3rem;letter-spacing:.05em;text-transform:uppercase;}
+.field input,.field select,.field textarea{width:100%;background:var(--surface);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:.55rem .8rem;font-size:.81rem;font-family:'Inter',sans-serif;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.12);}
+.field textarea{resize:vertical;min-height:70px;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
+/* Modal */
+.mm{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);z-index:300;display:none;align-items:center;justify-content:center;}
+.mm.open{display:flex;}
+.mbox{background:var(--card);border:1px solid var(--border2);border-radius:20px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.7);animation:mIn .22s ease;}
+@keyframes mIn{from{opacity:0;transform:scale(.95) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.mh{padding:1.35rem 1.55rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.mt{font-size:.97rem;font-weight:700;}
+.mx{background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.1rem;}
+.mx:hover{color:var(--text);}
+.mb{padding:1.35rem 1.55rem;}
+.mf{padding:.85rem 1.55rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.65rem;}
+/* Toast */
+.ts{position:fixed;bottom:1.25rem;right:1.25rem;z-index:500;display:flex;flex-direction:column;gap:.45rem;}
+.ti{background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:.75rem 1rem;
+  font-size:.79rem;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.15);
+  display:flex;align-items:center;gap:.6rem;min-width:250px;
+  transform:translateX(110%);transition:transform .3s ease;}
+.ti.in{transform:translateX(0);}
+.ti.success{border-left:3px solid var(--green);}
+.ti.error{border-left:3px solid var(--red);}
+.ti.info{border-left:3px solid var(--blue);}
+.ti.warn{border-left:3px solid var(--amber);}
+/* Pipeline */
+.pipe{display:flex;align-items:flex-start;padding:1.1rem;overflow-x:auto;}
+.ps{flex:1;min-width:90px;display:flex;flex-direction:column;align-items:center;gap:.4rem;position:relative;}
+.ps:not(:last-child)::after{content:'';position:absolute;top:21px;left:calc(50% + 23px);right:calc(-50% + 23px);height:2px;background:var(--border2);}
+.ps.done:not(:last-child)::after{background:var(--green);}
+.ps.active:not(:last-child)::after{background:linear-gradient(90deg,var(--blue),var(--border2));}
+.sc{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;border:2px solid var(--border2);background:var(--surface);z-index:1;transition:.3s;}
+.ps.done .sc{border-color:var(--green);background:rgba(16,185,129,.15);box-shadow:0 0 10px rgba(16,185,129,.25);}
+.ps.active .sc{border-color:var(--blue);background:rgba(59,130,246,.15);box-shadow:0 0 16px rgba(59,130,246,.4);animation:pPulse 2s infinite;}
+@keyframes pPulse{0%,100%{box-shadow:0 0 16px rgba(59,130,246,.4);}50%{box-shadow:0 0 24px rgba(59,130,246,.7);}}
+.sl{font-size:.65rem;font-weight:600;color:var(--text3);text-align:center;}
+.ps.done .sl{color:var(--green);}
+.ps.active .sl{color:var(--blue);}
+/* AWS status chips */
+.awsRow{display:flex;gap:.65rem;flex-wrap:wrap;margin-bottom:1.2rem;}
+.awsChip{display:flex;align-items:center;gap:.5rem;padding:.5rem .85rem;
+  background:var(--card);border:1px solid var(--border);border-radius:10px;font-size:.74rem;}
+.awsDot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.awsDot.ok{background:var(--green);box-shadow:0 0 6px var(--green);animation:dotPulse 2s infinite;}
+.awsDot.warn{background:var(--amber);}
+.awsDot.err{background:var(--red);}
+@keyframes dotPulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+.awsLabel{font-weight:600;}
+.awsSub{color:var(--text3);font-size:.67rem;}
+/* Instance/bucket card */
+.resCard{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;}
+.resInfo{}
+.resName{font-size:.82rem;font-weight:700;}
+.resMeta{font-size:.7rem;color:var(--text3);margin-top:.2rem;}
+/* Setup wizard */
+.wizStep{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem;margin-bottom:.8rem;}
+.wizN{display:inline-flex;width:24px;height:24px;border-radius:50%;background:rgba(59,130,246,.2);border:2px solid var(--blue);color:var(--blue);font-size:.7rem;font-weight:700;align-items:center;justify-content:center;margin-right:.5rem;}
+.wizTitle{font-size:.82rem;font-weight:700;margin-bottom:.6rem;display:flex;align-items:center;}
+/* Empty */
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--text3);}
+.emptyIco{font-size:2.2rem;margin-bottom:.6rem;}
+.emptyTxt{font-size:.82rem;}
+/* Info box */
+.infoBox{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.18);border-radius:10px;padding:.75rem 1rem;font-size:.79rem;color:var(--text2);margin-bottom:.9rem;}
+.warnBox{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);border-radius:10px;padding:.75rem 1rem;font-size:.79rem;color:#fbbf24;margin-bottom:.9rem;}
+.successBox{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:.75rem 1rem;font-size:.79rem;color:#34d399;margin-bottom:.9rem;}
+.av{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;flex-shrink:0;}
+.av-b{background:rgba(59,130,246,.2);color:#60a5fa;}
+.av-g{background:rgba(16,185,129,.2);color:#34d399;}
+code{font-family:monospace;font-size:.82rem;}
+pre{font-family:monospace;font-size:.75rem;background:rgba(0,0,0,.4);padding:.75rem;border-radius:8px;overflow-x:auto;white-space:pre-wrap;color:var(--text2);}
+.tabs{display:flex;gap:.35rem;border-bottom:1px solid var(--border);margin-bottom:1.2rem;}
+.tab{padding:.5rem .9rem;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s;}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.tab:hover{color:var(--text);}
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.15);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;margin-right:.4rem;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="loginPage">
+  <div class="lpB">
+    <div class="brandLogo">🧵</div>
+    <div class="brandName">FabricFlow</div>
+    <div class="brandTag">Manufacturing Supply Chain Intelligence Platform</div>
+
+  </div>
+  <div class="lpF">
+    <div class="lpT">Welcome back</div>
+    <div class="lpS">Sign in to your FabricFlow dashboard</div>
+    <div class="fg"><label>Username</label><input id="li_u" placeholder="Enter username" autocomplete="username"/></div>
+    <div class="fg"><label>Password</label><input id="li_p" type="password" placeholder="Enter password" autocomplete="current-password"/></div>
+    <button class="btnLogin" onclick="doLogin()">Sign In →</button>
+    <div class="lpErr" id="lpErr">Invalid credentials.</div>
+
+  </div>
+</div>
+
+<!-- ══ APP SHELL ══ -->
+<div id="appShell">
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sb">
+      <div class="sbHead"><div class="sbLogo">🧵</div>
+        <div><div class="sbTitle">FabricFlow</div><div class="sbSub">Supply Chain Platform</div></div>
+      </div>
+      <div class="sbUser">
+        <div class="ua" id="sbAv"></div>
+        <div style="flex:1;min-width:0">
+          <div class="uName" id="sbName"></div>
+          <div class="uRole" id="sbRole"></div>
+        </div>
+      </div>
+      <nav class="sbNav" id="sbNav"></nav>
+      <div class="sbFoot"><button class="btnLogout" onclick="logout()">⏻ &nbsp;Sign Out</button></div>
+    </aside>
+    <!-- Main -->
+    <div class="mc">
+      <div class="pH" id="pH">
+        <div class="pHl"><div class="pHbc" id="pHbc"></div><div class="pHt" id="pHt"></div></div>
+        <div class="pHr" id="pHr">
+          <!-- Bell added dynamically -->
+        </div>
+      </div>
+      <div class="cb" id="cb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Notification Panel -->
+<div class="notifMask" id="notifMask" onclick="if(event.target===this)closeNotif()">
+  <div class="notifPanel">
+    <div class="nPHead">
+      <div class="nPTitle">🔔 Notifications</div>
+      <button class="nPClose" onclick="closeNotif()">✕</button>
+    </div>
+    <div class="nPActions">
+      <button class="btn btn-xs btn-s" onclick="markAllRead()">Mark all read</button>
+      <button class="btn btn-xs btn-g" onclick="clearNotifs()">Clear all</button>
+    </div>
+    <div class="nPFeed" id="notifFeed"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="mm" id="gModal">
+  <div class="mbox">
+    <div class="mh"><div class="mt" id="gMT"></div><button class="mx" onclick="closeModal()">✕</button></div>
+    <div class="mb" id="gMB"></div>
+    <div class="mf" id="gMF"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="ts" id="ts"></div>
+
+<script>
+'use strict';
+// ═══════════════════════════════════════════════════════
+//  CONSTANTS
+// ═══════════════════════════════════════════════════════
+const API='/int/v1';
+const STAGES=['Processing','Weaving','Dyeing','Warehouse','Shipped'];
+const SICONS={Processing:'⚙️',Weaving:'🪡',Dyeing:'🎨',Warehouse:'📦',Shipped:'🚚'};
+const FABRICS=['cotton','silk','linen','polyester','wool'];
+const LOCS=['Chennai','Bangalore','Mumbai','Hyderabad','Surat','Ludhiana','Delhi','Kolkata','Ahmedabad'];
+const SM={
+  pending:{l:'Pending Review',c:'b-amber'},accepted:{l:'Accepted',c:'b-blue'},
+  Processing:{l:'Processing',c:'b-blue'},Weaving:{l:'Weaving',c:'b-cyan'},
+  Dyeing:{l:'Dyeing',c:'b-violet'},Warehouse:{l:'At Warehouse',c:'b-green'},
+  Shipped:{l:'Shipped 🚚',c:'b-green'},rejected:{l:'Rejected',c:'b-red'},
+  cancelled:{l:'Cancelled',c:'b-gray'}, delayed:{l:'Delayed ⚠️',c:'b-red'}
+};
+const NOTIF_ICONS={order:'📦',stage:'🔄',aws:'☁️',system:'⚙️',alert:'⚠️'};
+
+// ═══════════════════════════════════════════════════════
+//  LOCAL STORAGE DB
+// ═══════════════════════════════════════════════════════
+const DB={
+  g(k){try{return JSON.parse(localStorage.getItem('ff3_'+k))||[];}catch{return[];}},
+  s(k,v){localStorage.setItem('ff3_'+k,JSON.stringify(v));},
+  o(k){try{return JSON.parse(localStorage.getItem('ff3_'+k))||null;}catch{return null;}},
+  so(k,v){localStorage.setItem('ff3_'+k,JSON.stringify(v));}
+};
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+
+function initDB(){
+  let u=DB.g('users');
+  if(!u.find(x=>x.username==='devansh-admin')){
+    u.push({id:'admin-001',username:'devansh-admin',password:'Devanshika@2119',
+      role:'admin',name:'Devansh Gupta',email:'admin@fabricflow.io',createdAt:new Date().toISOString()});
+    DB.s('users',u);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  NOTIFICATION SYSTEM
+// ═══════════════════════════════════════════════════════
+function pushNotif(toId, msg, type='order', meta={}){
+  const notifs=DB.g('notifications');
+  notifs.push({id:uid(),toId,msg,type,meta,read:false,createdAt:new Date().toISOString()});
+  DB.s('notifications',notifs);
+  updateBell();
+}
+
+function myNotifs(){
+  const all=DB.g('notifications');
+  if(!cu) return[];
+  if(cu.role==='admin') return all.slice().reverse();             // admin sees ALL
+  return all.filter(n=>n.toId===cu.id||n.toId==='all').reverse(); // others see their own
+}
+
+function unreadCount(){return myNotifs().filter(n=>!n.read).length;}
+
+function updateBell(){
+  const cnt=unreadCount();
+  const bell=document.getElementById('bellCount');
+  if(bell){
+    if(cnt>0){bell.textContent=cnt>99?'99+':cnt;bell.style.display='flex';}
+    else bell.style.display='none';
+  }
+  // also update nav badge
+  const navB=document.getElementById('ni-notifs');
+  if(navB){
+    const badge=navB.querySelector('.niBadge');
+    if(badge) badge.textContent=cnt||'';
+    if(badge) badge.style.display=cnt?'flex':'none';
+  }
+}
+
+function renderNotifFeed(){
+  const ns=myNotifs();
+  const feed=document.getElementById('notifFeed');
+  if(!feed)return;
+  if(!ns.length){feed.innerHTML=`<div class="empty"><div class="emptyIco">🔔</div><div class="emptyTxt">No notifications yet</div></div>`;return;}
+  feed.innerHTML=ns.map(n=>`
+    <div class="notifItem ${n.read?'':'unread'} ${n.type}" onclick="readNotif('${n.id}')">
+      ${!n.read?`<div class="nUnreadDot"></div>`:''}
+      <div class="nMsg"><span class="nIco">${NOTIF_ICONS[n.type]||'🔔'}</span>${n.msg}</div>
+      <div class="nTime">${timeAgo(n.createdAt)}</div>
+    </div>`).join('');
+}
+
+function readNotif(id){
+  const ns=DB.g('notifications'),i=ns.findIndex(n=>n.id===id);
+  if(i>-1)ns[i].read=true;
+  DB.s('notifications',ns);
+  renderNotifFeed();updateBell();
+}
+function markAllRead(){
+  const ns=DB.g('notifications');
+  if(cu.role==='admin') ns.forEach(n=>n.read=true);
+  else ns.filter(n=>n.toId===cu.id||n.toId==='all').forEach(n=>n.read=true);
+  DB.s('notifications',ns);
+  renderNotifFeed();updateBell();
+}
+function clearNotifs(){
+  if(cu.role==='admin') DB.s('notifications',[]);
+  else{const ns=DB.g('notifications').filter(n=>n.toId!==cu.id&&n.toId!=='all');DB.s('notifications',ns);}
+  renderNotifFeed();updateBell();
+}
+function openNotif(){document.getElementById('notifMask').classList.add('open');renderNotifFeed();}
+function closeNotif(){document.getElementById('notifMask').classList.remove('open');}
+
+// ═══════════════════════════════════════════════════════
+//  AWS CONFIG (stored client-side per admin)
+// ═══════════════════════════════════════════════════════
+function getAwsCreds(){return DB.o('awsCreds')||{key:'',secret:'',token:'',region:'us-east-1',topicArn:'',accountId:'',validated:false};}
+function saveAwsCreds(c){DB.so('awsCreds',c);}
+function awsHeaders(){
+  const c=getAwsCreds();
+  let headers = {'X-Aws-Key':c.key,'X-Aws-Secret':c.secret,'X-Aws-Region':c.region,'Accept':'application/json','Content-Type':'application/json'};
+  if (c.token) headers['X-Aws-Token'] = c.token;
+  return headers;
+}
+function awsReady(){const c=getAwsCreds();return !!(c.key&&c.secret&&c.validated);}
+
+// ═══════════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════════
+let cu=null,pg='';
+function doLogin(){
+  const u=document.getElementById('li_u').value.trim();
+  const p=document.getElementById('li_p').value;
+  const user=DB.g('users').find(x=>x.username===u&&x.password===p);
+  if(!user){document.getElementById('lpErr').style.display='block';return;}
+  document.getElementById('lpErr').style.display='none';
+  cu=user;DB.so('sess',user);showApp();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!cu)doLogin();});
+function logout(){cu=null;DB.so('sess',null);document.getElementById('appShell').style.display='none';document.getElementById('loginPage').style.display='flex';document.getElementById('li_p').value='';}
+
+// ═══════════════════════════════════════════════════════
+//  APP SHELL
+// ═══════════════════════════════════════════════════════
+function showApp(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('appShell').style.display='block';
+  const av=document.getElementById('sbAv');
+  av.className=`ua ua-${cu.role}`;av.textContent=cu.name[0];
+  document.getElementById('sbName').textContent=cu.name;
+  document.getElementById('sbRole').className=`uRole ${cu.role}`;
+  document.getElementById('sbRole').textContent=cu.role;
+  // Add notification bell
+  document.getElementById('pHr').innerHTML=`
+    <div class="bellBtn" onclick="openNotif()" title="Notifications">
+      🔔
+      <div class="bellCount" id="bellCount" style="display:none">0</div>
+    </div>`;
+  buildNav();
+  updateBell();
+  // Poll for notifications every 15s
+  setInterval(updateBell,15000);
+  navigate({admin:'ov',manufacturer:'mfr-ov',buyer:'buyer-ov'}[cu.role]);
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════════════════════
+const NAVS={
+  admin:[
+    {sec:'Overview'},{id:'ov',ico:'📊',lbl:'Dashboard'},
+    {sec:'Management'},{id:'mfrs',ico:'🏭',lbl:'Manufacturers'},{id:'all-orders',ico:'📋',lbl:'All Orders'},
+    {sec:'Notifications'},{id:'notifs',ico:'🔔',lbl:'All Notifications',badge:true},
+    {sec:'AWS Cloud'},{id:'aws-setup',ico:'🔑',lbl:'AWS Setup'},{id:'aws-ec2',ico:'🖥️',lbl:'EC2 Instances'},{id:'aws-s3',ico:'📦',lbl:'S3 Buckets'},{id:'aws-sns',ico:'🔔',lbl:'SNS Topics'},{id:'pipeline',ico:'🔄',lbl:'Live Pipeline'},
+  ],
+  manufacturer:[
+    {sec:'Overview'},{id:'mfr-ov',ico:'📊',lbl:'Dashboard'},
+    {sec:'Shipments'},{id:'shipments',ico:'🚚',lbl:'Shipments'},{id:'orders',ico:'📋',lbl:'Orders',badge:true},
+    {sec:'Business'},{id:'buyers',ico:'👥',lbl:'My Buyers'},{id:'chat',ico:'💬',lbl:'Chat',badge:'chat'},
+    {sec:'Notifications'},{id:'notifs',ico:'🔔',lbl:'Notifications',badge:true},
+  ],
+  buyer:[
+    {sec:'Overview'},{id:'buyer-ov',ico:'📊',lbl:'Dashboard'},
+    {sec:'Orders'},{id:'place-order',ico:'➕',lbl:'Place Order'},{id:'my-orders',ico:'📦',lbl:'My Orders'},
+    {sec:'Tracking'},{id:'track',ico:'🔍',lbl:'Track Shipment'},{id:'chat',ico:'💬',lbl:'Chat',badge:'chat'},
+    {sec:'Notifications'},{id:'notifs',ico:'🔔',lbl:'Notifications',badge:true},
+  ]
+};
+
+function buildNav(){
+  const items=NAVS[cu.role]||[];
+  document.getElementById('sbNav').innerHTML=items.map(i=>{
+    if(i.sec)return`<div class="navSec">${i.sec}</div>`;
+    let badge='';
+    if(i.id==='orders'){const c=DB.g('orders').filter(o=>o.manufacturerId===cu.id&&o.status==='pending').length;if(c)badge=`<span class="niBadge">${c}</span>`;}
+    if(i.badge==='chat'){const msgs=DB.g('chat_messages')||[];const c=msgs.filter(m=>m.toId===cu.id&&!m.read).length;if(c)badge=`<span class="niBadge blue">${c}</span>`;}
+    else if(i.badge){const c=unreadCount();if(c)badge=`<span class="niBadge blue">${c}</span>`;}
+    return`<div class="ni" id="ni-${i.id}" onclick="navigate('${i.id}')">
+      <span class="niIco">${i.ico}</span>${i.lbl}${badge}
+    </div>`;
+  }).join('');
+}
+
+function navigate(page){
+  pg=page;
+  document.querySelectorAll('.ni').forEach(e=>e.classList.remove('active'));
+  const el=document.getElementById('ni-'+page);if(el)el.classList.add('active');
+  const map={
+    ov:renderAdminDash,mfrs:renderMfrs,'all-orders':renderAllOrders,
+    notifs:renderNotifsPage,'aws-setup':renderAwsSetup,'aws-ec2':renderEc2,
+    'aws-s3':renderS3,'aws-sns':renderSns,pipeline:renderPipelinePage,
+    'mfr-ov':renderMfrDash,shipments:renderShipments,orders:renderOrders,buyers:renderBuyers,
+    'buyer-ov':renderBuyerDash,'place-order':renderPlaceOrder,'my-orders':renderMyOrders,track:renderTrack,
+    chat:renderChatPage,
+  };
+  if(map[page])map[page]();
+}
+function setPage(t,bc='FabricFlow',acts=''){
+  document.getElementById('pHt').textContent=t;
+  document.getElementById('pHbc').textContent=bc;
+  document.getElementById('pHr').innerHTML= acts + `
+    <div class="bellBtn" onclick="openNotif()" title="Notifications">
+      🔔
+      <div class="bellCount" id="bellCount" style="display:none">0</div>
+    </div>`;
+  updateBell();
+}
+
+// ═══════════════════════════════════════════════════════
+//  NOTIFICATIONS PAGE (all roles)
+// ═══════════════════════════════════════════════════════
+function renderNotifsPage(){
+  setPage('Notifications',`${cu.role} → Notifications`,'');
+  const ns=myNotifs();
+  document.getElementById('cb').innerHTML=`
+  <div class="panel">
+    <div class="ph"><div class="pt">🔔 ${cu.role==='admin'?'All System Notifications':'My Notifications'} (${ns.length})</div>
+      <div style="display:flex;gap:.5rem">
+        <button class="btn btn-sm btn-s" onclick="markAllRead();renderNotifsPage()">Mark all read</button>
+        <button class="btn btn-sm btn-g" onclick="clearNotifs();renderNotifsPage()">Clear all</button>
+      </div>
+    </div>
+    ${ns.length?`<div class="pb" style="padding:.6rem">
+      ${ns.map(n=>{
+        const u=DB.g('users');
+        const from=u.find(x=>x.id===n.meta.fromId);
+        const to=cu.role==='admin'?u.find(x=>x.id===n.toId):null;
+        return `<div class="notifItem ${n.read?'':'unread'} ${n.type}" onclick="readNotif('${n.id}');renderNotifsPage()">
+          ${!n.read?`<div class="nUnreadDot"></div>`:''}
+          <div style="display:flex;align-items:flex-start;gap:.65rem">
+            <div style="font-size:1.3rem;margin-top:.1rem">${NOTIF_ICONS[n.type]||'🔔'}</div>
+            <div style="flex:1">
+              <div class="nMsg">${n.msg}</div>
+              <div class="nTime" style="display:flex;gap:.75rem;align-items:center;margin-top:.35rem">
+                ${timeAgo(n.createdAt)}
+                ${from?`<span class="badge b-gray" style="font-size:.6rem">from ${from.name}</span>`:''}
+                ${to&&cu.role==='admin'?`<span class="badge b-blue" style="font-size:.6rem">→ ${to.name}</span>`:''}
+                <span class="badge ${n.read?'b-gray':'b-blue'}" style="font-size:.6rem">${n.read?'Read':'Unread'}</span>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`:`<div class="pb">${empty('🔔','No notifications yet')}</div>`}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  ADMIN PAGES
+// ═══════════════════════════════════════════════════════
+async function renderAdminDash(){
+  setPage('Dashboard','Admin → Overview');
+  const u=DB.g('users'),o=DB.g('orders');
+  const mfrs=u.filter(x=>x.role==='manufacturer'),buyers=u.filter(x=>x.role==='buyer');
+  const unread=unreadCount();
+  let awsHtml='',pipeHtml='';
+  try{
+    const d=await apiFetch('/dashboard');
+    const s=d.summary;
+    awsHtml=`<div class="awsRow">
+      ${awsChip('ok','API','Connected','✅')}
+      ${awsChip('ok','Database','MySQL Healthy','🗄️')}
+      ${awsChip('ok','Queue','Redis Active','⚡')}
+      ${awsReady()?awsChip('ok','S3 Logs','Writing Events','📦'):awsChip('warn','S3 Logs','Configure AWS →','📦')}
+      ${awsReady()?awsChip('ok','CloudWatch','Monitoring','📊'):awsChip('warn','CloudWatch','Configure AWS →','📊')}
+    </div>`;
+    pipeHtml=`<div class="panel"><div class="ph"><div class="pt">🔄 Live Manufacturing Pipeline</div></div>
+      <div class="pipe">${pipeSteps(d.batches_per_stage)}</div>
+      <div class="pb" style="display:flex;gap:.75rem;flex-wrap:wrap;border-top:1px solid var(--border)">
+        ${miniStat('Total',s.total_batches,'#3b82f6')}${miniStat('Active',s.active_batches,'#10b981')}
+        ${miniStat('Delayed',s.delayed_batches,'#f59e0b')}${miniStat('Completed',s.completed,'#8b5cf6')}
+        ${miniStat('SLA Breaches',s.overdue_count,'#ef4444')}
+      </div></div>`;
+  }catch(e){}
+  document.getElementById('cb').innerHTML=`
+  <div class="kpig">
+    ${kpi('🏭','Manufacturers',mfrs.length,'linear-gradient(90deg,#3b82f6,#6366f1)')}
+    ${kpi('👥','Buyers',buyers.length,'linear-gradient(90deg,#10b981,#34d399)')}
+    ${kpi('📦','Total Orders',o.length,'linear-gradient(90deg,#8b5cf6,#a78bfa)')}
+    ${kpi('🔔','Notifications',unread,'linear-gradient(90deg,#f59e0b,#fbbf24)')}
+  </div>
+  ${awsReady()?'':`<div class="warnBox">⚠️ AWS not connected. <a href="#" onclick="navigate('aws-setup')" style="color:var(--amber);font-weight:700">Setup AWS →</a> to enable real cloud deployment, SNS notifications, S3 logs, and CloudWatch monitoring.</div>`}
+  ${awsHtml}${pipeHtml}
+  <div class="g2">
+    <div class="panel"><div class="ph"><div class="pt">🏭 Manufacturers</div><button class="btn btn-sm btn-p" onclick="navigate('mfrs')">View All</button></div>
+    <div class="pb">${mfrs.slice(-5).reverse().map(m=>`
+      <div style="display:flex;align-items:center;gap:.7rem;padding:.4rem 0;border-bottom:1px solid var(--border)">
+        <div class="av av-b">${m.name[0]}</div>
+        <div><div style="font-size:.82rem;font-weight:600">${m.name}</div><div style="font-size:.68rem;color:var(--text3)">@${m.username}</div></div>
+        <div style="margin-left:auto;font-size:.73rem;color:var(--text3)">${buyers.filter(b=>b.manufacturerId===m.id).length} buyers</div>
+      </div>`).join('')||empty('🏭','No manufacturers yet')}
+    </div></div>
+    <div class="panel"><div class="ph"><div class="pt">🔔 Recent Notifications</div><button class="btn btn-sm btn-p" onclick="navigate('notifs')">View All</button></div>
+    <div class="pb">${myNotifs().slice(0,5).map(n=>`
+      <div style="display:flex;align-items:flex-start;gap:.65rem;padding:.4rem 0;border-bottom:1px solid var(--border)">
+        <div style="font-size:1.1rem">${NOTIF_ICONS[n.type]||'🔔'}</div>
+        <div style="flex:1"><div style="font-size:.79rem;color:${n.read?'var(--text2)':'var(--text)'};font-weight:${n.read?400:600}">${n.msg}</div>
+        <div style="font-size:.67rem;color:var(--text3)">${timeAgo(n.createdAt)}</div></div>
+        ${!n.read?`<div style="width:7px;height:7px;border-radius:50%;background:var(--blue);margin-top:.4rem;flex-shrink:0"></div>`:''}
+      </div>`).join('')||empty('🔔','No notifications yet')}
+    </div></div>
+  </div>`;
+}
+
+function renderMfrs(){
+  setPage('Manufacturers','Admin → Manufacturers',`<button class="btn btn-p" onclick="openAddMfr()">➕ Add Manufacturer</button>`);
+  const u=DB.g('users'),buyers=u.filter(x=>x.role==='buyer'),orders=DB.g('orders'),mfrs=u.filter(x=>x.role==='manufacturer');
+  document.getElementById('cb').innerHTML=`<div class="panel"><div class="ph"><div class="pt">🏭 All Manufacturers (${mfrs.length})</div></div>
+  <div style="overflow-x:auto"><table>
+    <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Buyers</th><th>Orders</th><th>Joined</th><th>Actions</th></tr></thead>
+    <tbody>${mfrs.length?mfrs.map(m=>`<tr>
+      <td><div style="display:flex;align-items:center;gap:.6rem"><div class="av av-b">${m.name[0]}</div>
+      <div><div style="font-weight:600">${m.name}</div>${m.company?`<div style="font-size:.68rem;color:var(--text3)">${m.company}</div>`:''}</div></div></td>
+      <td><code style="color:var(--blue)">@${m.username}</code></td>
+      <td style="color:var(--text2)">${m.email||'—'}</td>
+      <td><span class="badge b-blue">${buyers.filter(b=>b.manufacturerId===m.id).length}</span></td>
+      <td><span class="badge b-violet">${orders.filter(o=>o.manufacturerId===m.id).length}</span></td>
+      <td style="color:var(--text3);font-size:.73rem">${fmtDate(m.createdAt)}</td>
+      <td><button class="btn btn-xs btn-d" onclick="delMfr('${m.id}')">Delete</button></td>
+    </tr>`).join(''):`<tr><td colspan="7">${empty('🏭','No manufacturers yet')}</td></tr>`}
+    </tbody>
+  </table></div></div>`;
+}
+function openAddMfr(){
+  openModal('➕ Add Manufacturer',`
+  <div class="fr"><div class="field"><label>Full Name *</label><input id="m_n" placeholder="Rajesh Textiles Pvt Ltd"/></div>
+  <div class="field"><label>Company</label><input id="m_c" placeholder="Company name"/></div></div>
+  <div class="fr"><div class="field"><label>Username *</label><input id="m_u" placeholder="mfr-username"/></div>
+  <div class="field"><label>Password *</label><input id="m_p" type="password" placeholder="Strong password"/></div></div>
+  <div class="fr"><div class="field"><label>Email</label><input id="m_e" type="email" placeholder="email@company.com"/></div>
+  <div class="field"><label>Phone</label><input id="m_ph" placeholder="+91 98765 43210"/></div></div>
+  <div class="field"><label>City / Location</label><input id="m_a" placeholder="Surat, Gujarat"/></div>`,
+  `<button class="btn btn-g" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="saveMfr()">Create Manufacturer</button>`);
+}
+async function saveMfr(){
+  const n=v('m_n'),u=v('m_u'),p=v('m_p'),e=v('m_e');
+  if(!n||!u||!p){toast('Name, username and password required','error');return;}
+  const users=DB.g('users');if(users.find(x=>x.username===u)){toast('Username taken','error');return;}
+  const id=uid();
+  const btn = document.querySelector('.modal button.btn-p');
+  if(btn) { btn.disabled = true; btn.innerHTML = 'Creating (Provisioning SNS)...'; }
+  const topicArn = await createUserSns(id, 'mfr', e);
+  const mfr={id,username:u,password:p,role:'manufacturer',name:n,company:v('m_c'),email:e,phone:v('m_ph'),address:v('m_a'),topicArn,createdAt:new Date().toISOString()};
+  users.push(mfr);DB.s('users',users);
+  // Notify admin (self)
+  pushNotif('admin-001',`🏭 New manufacturer "${n}" created by Admin`,  'system',{fromId:cu.id});
+  
+  // Send actual Welcome Email to the new manufacturer via SES
+  if(e) {
+      sendEmail(e, 'Welcome to FabricFlow — Account Created', `
+        <div style="font-family:sans-serif;color:#333;">
+          <h3>Welcome, ${n}!</h3>
+          <p>Your Manufacturer account has been successfully created by the Admin.</p>
+          <p><strong>Username:</strong> ${u}<br>
+          <strong>Password:</strong> ${p}</p>
+          <p>Please log in to your dashboard to manage orders and fabric batches.</p>
+          <p><em>Note: You may also receive a separate "AWS Notification" email shortly. Please click "Confirm Subscription" in that email so we can send you real-time order alerts!</em></p>
+        </div>
+      `);
+  }
+  
+  // Send confirmation email to Admin via SES
+  if(cu.email) {
+      sendEmail(cu.email, 'Manufacturer Created Successfully', `
+        <div style="font-family:sans-serif;color:#333;">
+          <h3>Admin Notification</h3>
+          <p>You have successfully created a new Manufacturer account.</p>
+          <ul>
+            <li><strong>Name:</strong> ${n}</li>
+            <li><strong>Username:</strong> ${u}</li>
+            <li><strong>Email:</strong> ${e}</li>
+          </ul>
+        </div>
+      `);
+  }
+
+  closeModal();toast(`Manufacturer "${n}" created`,'success');renderMfrs();
+}
+function delMfr(id){if(!confirm('Delete?'))return;DB.s('users',DB.g('users').filter(u=>!(u.id===id||(u.role==='buyer'&&u.manufacturerId===id))));toast('Deleted','info');renderMfrs();}
+
+function renderAllOrders(){
+  setPage('All Orders','Admin → Orders');
+  const o=DB.g('orders'),u=DB.g('users');
+  document.getElementById('cb').innerHTML=`<div class="panel">
+  <div class="ph"><div class="pt">📋 All Orders (${o.length})</div></div>
+  <div style="overflow-x:auto"><table>
+    <thead><tr><th>ID</th><th>Buyer</th><th>Manufacturer</th><th>Fabric</th><th>Qty</th><th>Route</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody>${o.length?o.slice().reverse().map(or=>{
+      const b=u.find(x=>x.id===or.buyerId),m=u.find(x=>x.id===or.manufacturerId);
+      const s=or.isDelayed?SM.delayed:(SM[or.status]||SM.pending);
+      return`<tr>
+        <td><code style="color:var(--blue)">#${or.id.slice(-6).toUpperCase()}</code></td>
+        <td>${b?b.name:'—'}</td><td>${m?m.name:'—'}</td>
+        <td style="text-transform:capitalize">${or.fabricType}</td>
+        <td>${or.qty} kg</td>
+        <td style="font-size:.72rem;color:var(--text2)">${or.origin||'—'} → ${or.destination||'—'}</td>
+        <td><span class="badge ${s.c}">${s.l}</span></td>
+        <td style="color:var(--text3);font-size:.72rem">${fmtDate(or.createdAt)}</td>
+      </tr>`;
+    }).join(''):`<tr><td colspan="8">${empty('📋','No orders')}</td></tr>`}
+    </tbody>
+  </table></div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  AWS SETUP PAGE (admin only)
+// ═══════════════════════════════════════════════════════
+function renderAwsSetup(){
+  setPage('AWS Setup','Admin → AWS Cloud');
+  const creds=getAwsCreds();
+  document.getElementById('cb').innerHTML=`
+  <div class="g2">
+    <div>
+      ${creds.validated?`<div class="successBox">✅ AWS Connected — Account: <strong>${creds.accountId||'—'}</strong> · Region: <strong>${creds.region}</strong></div>`:''}
+      <div class="panel"><div class="ph"><div class="pt">🔑 AWS Credentials</div></div><div class="pb">
+        <div class="infoBox">🔐 Credentials are stored locally in your browser and sent per-request. They are <strong>never saved on the server</strong>.</div>
+        <div class="field"><label>AWS Access Key ID *</label><input id="aws_key" placeholder="AKIAIOSFODNN7EXAMPLE" value="${creds.key}"/></div>
+        <div class="field"><label>AWS Secret Access Key *</label><input id="aws_secret" type="password" placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" value="${creds.secret}"/></div>
+        <div class="field"><label>AWS Session Token (Optional)</label><input id="aws_token" type="password" placeholder="Required for AWS Academy or temporary creds" value="${creds.token||''}"/></div>
+        <div class="field"><label>Region</label>
+          <select id="aws_region">
+            ${['us-east-1','us-west-2','eu-west-1','ap-south-1','ap-southeast-1'].map(r=>`<option ${r===creds.region?'selected':''}>${r}</option>`).join('')}
+          </select>
+        </div>
+        <div style="display:flex;gap:.65rem;margin-top:.25rem">
+          <button class="btn btn-p" id="validateBtn" onclick="validateAws()">🔍 Test & Save</button>
+          ${creds.validated?`<button class="btn btn-s" onclick="navigate('aws-ec2')">View EC2 →</button>`:''}
+        </div>
+        <div id="awsValResult" style="margin-top:.75rem"></div>
+      </div></div>
+
+      <div class="panel"><div class="ph"><div class="pt">📧 SNS Email Notifications</div></div><div class="pb">
+        <div class="infoBox">📬 Subscribe emails to receive real-time alerts when orders are placed, stages advance, or delays are detected.</div>
+        <div class="field"><label>SNS Topic ARN</label><input id="sns_arn" placeholder="arn:aws:sns:us-east-1:123456789:fabricflow-alerts" value="${creds.topicArn||''}"/></div>
+        <div class="field"><label>Subscribe New Email</label><input id="sns_email" type="email" placeholder="manager@company.com"/></div>
+        <div style="display:flex;gap:.65rem;margin-top:.25rem">
+          <button class="btn btn-p" onclick="saveSnsTopic()">💾 Save Topic</button>
+          <button class="btn btn-s" onclick="subscribeEmail()">📧 Subscribe</button>
+          <button class="btn btn-g" onclick="createSnsTopic()">➕ Create Topic</button>
+        </div>
+        <div id="snsResult" style="margin-top:.6rem"></div>
+      </div></div>
+    </div>
+
+    <div class="panel"><div class="ph"><div class="pt">📋 How to Get AWS Credentials</div></div><div class="pb">
+      ${[
+        ['1','Open AWS Console','Go to console.aws.amazon.com and sign in'],
+        ['2','Go to IAM','Search for IAM in the top search bar'],
+        ['3','Create User','IAM → Users → Create User (e.g. fabricflow-user)'],
+        ['4','Set Permissions','Attach: AmazonEC2FullAccess, AmazonS3FullAccess, AmazonSNSFullAccess, CloudWatchFullAccess'],
+        ['5','Create Access Key','User → Security credentials → Create access key'],
+        ['6','Copy Keys','Copy Access Key ID and Secret Access Key'],
+        ['7','Paste Here','Paste the keys in the form on the left and click Test & Save'],
+      ].map(([n,t,d])=>`<div style="display:flex;align-items:flex-start;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border)">
+        <div style="width:24px;height:24px;border-radius:50%;background:rgba(59,130,246,.2);border:2px solid var(--blue);color:var(--blue);font-size:.7rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">${n}</div>
+        <div><div style="font-size:.8rem;font-weight:600">${t}</div><div style="font-size:.7rem;color:var(--text3)">${d}</div></div>
+      </div>`).join('')}
+    </div></div>
+  </div>`;
+}
+
+async function validateAws(){
+  const key=v('aws_key'),secret=v('aws_secret'),token=v('aws_token'),region=document.getElementById('aws_region').value;
+  if(!key||!secret){toast('Enter both Access Key and Secret Key','error');return;}
+  const btn=document.getElementById('validateBtn');
+  btn.innerHTML='<span class="spinner"></span>Validating…';btn.disabled=true;
+  const res=document.getElementById('awsValResult');
+  try{
+    let headers = {'X-Aws-Key':key,'X-Aws-Secret':secret,'X-Aws-Region':region,'Accept':'application/json','Content-Type':'application/json'};
+    if (token) headers['X-Aws-Token'] = token;
+    const r=await fetch(API+'/aws/validate',{method:'POST',headers:headers,body:JSON.stringify({})});
+    const d=await r.json();
+    if(d.success){
+      saveAwsCreds({key,secret,token,region,validated:true,accountId:d.data.account_id,topicArn:getAwsCreds().topicArn||''});
+      res.innerHTML=`<div class="successBox">✅ Connected! Account: <strong>${d.data.account_id}</strong> · User: ${d.data.user_arn.split('/').pop()}</div>`;
+      pushNotif('admin-001',`☁️ AWS account connected successfully (${d.data.account_id})`, 'aws',{fromId:cu.id});
+      toast('AWS connected!','success');
+      setTimeout(()=>navigate('aws-setup'),1000);
+    }else{
+      res.innerHTML=`<div class="lpErr" style="display:block">${d.error}</div>`;
+    }
+  }catch(e){
+    res.innerHTML=`<div class="lpErr" style="display:block">Connection failed. Is the API running?</div>`;
+  }
+  btn.innerHTML='🔍 Test & Save';btn.disabled=false;
+}
+
+function saveSnsTopic(){
+  const arn=v('sns_arn');if(!arn){toast('Enter topic ARN','error');return;}
+  const c=getAwsCreds();c.topicArn=arn;saveAwsCreds(c);
+  toast('Topic ARN saved','success');
+  document.getElementById('snsResult').innerHTML=`<div class="successBox">✅ Topic saved — notifications will use this ARN</div>`;
+}
+
+async function subscribeEmail(){
+  const email=v('sns_email'),c=getAwsCreds();
+  if(!email){toast('Enter email','error');return;}
+  if(!c.topicArn){toast('Save a Topic ARN first','error');return;}
+  try{
+    const r=await fetch(API+'/aws/sns/subscribe',{method:'POST',headers:awsHeaders(),body:JSON.stringify({topic_arn:c.topicArn,email})});
+    const d=await r.json();
+    if(d.success){toast('Confirmation email sent! Check inbox.','success');}
+    else toast(d.error,'error');
+  }catch(e){toast('SNS subscribe failed','error');}
+}
+
+async function createSnsTopic(){
+  const name='fabricflow-notifications-'+Date.now().toString(36);
+  try{
+    const r=await fetch(API+'/aws/sns/topics',{method:'POST',headers:awsHeaders(),body:JSON.stringify({name})});
+    const d=await r.json();
+    if(d.success){
+      document.getElementById('sns_arn').value=d.data.topic_arn;
+      document.getElementById('snsResult').innerHTML=`<div class="successBox">✅ Topic created: <code>${d.data.topic_arn}</code></div>`;
+      toast('SNS topic created!','success');
+    }else toast(d.error,'error');
+  }catch(e){toast('Failed','error');}
+}
+
+// ═══════════════════════════════════════════════════════
+//  AWS EC2 PAGE (admin only)
+// ═══════════════════════════════════════════════════════
+async function renderEc2(){
+  setPage('EC2 Instances','Admin → AWS Cloud');
+  if(!awsReady()){document.getElementById('cb').innerHTML=noAwsWarning();return;}
+  document.getElementById('cb').innerHTML=`<div style="text-align:center;padding:2rem"><span class="spinner"></span> Loading EC2 instances…</div>`;
+  try{
+    const r=await fetch(API+'/aws/ec2/instances',{headers:awsHeaders()});
+    const d=await r.json();
+    if(!d.success){document.getElementById('cb').innerHTML=`<div class="lpErr" style="display:block">${d.error}</div>`;return;}
+    const instances=d.data.instances;
+    document.getElementById('cb').innerHTML=`
+    <div class="ph" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;border-bottom:none">
+      <div class="pt">🖥️ EC2 Instances (${d.data.count})</div>
+      <button class="btn btn-p btn-sm" onclick="promptLaunchEc2()">➕ Launch Instance</button>
+    </div>
+    <div class="panel" style="border-radius:0 0 var(--radius) var(--radius);border-top:none">
+    <div style="overflow-x:auto"><table>
+      <thead><tr><th>Name</th><th>Instance ID</th><th>Type</th><th>State</th><th>Public IP</th><th>AZ</th><th>Launched</th><th>Actions</th></tr></thead>
+      <tbody>${instances.length?instances.map(i=>`<tr>
+        <td><strong>${i.name||'—'}</strong></td>
+        <td><code style="color:var(--blue)">${i.id}</code></td>
+        <td><span class="badge b-cyan">${i.type}</span></td>
+        <td><span class="badge ${i.state==='running'?'b-green':i.state==='stopped'?'b-amber':'b-gray'}">${i.state}</span></td>
+        <td style="color:var(--text2)">${i.public_ip||'—'}</td>
+        <td style="color:var(--text3);font-size:.72rem">${i.az||'—'}</td>
+        <td style="color:var(--text3);font-size:.72rem">${i.launched?new Date(i.launched).toLocaleDateString():' —'}</td>
+        <td><button class="btn btn-xs btn-d" onclick="terminateEc2('${i.id}','${i.name||i.id}')">Terminate</button></td>
+      </tr>`).join(''):`<tr><td colspan="8">${empty('🖥️','No EC2 instances found in this region')}</td></tr>`}
+      </tbody>
+    </table></div></div>`;
+  }catch(e){document.getElementById('cb').innerHTML=`<div class="panel"><div class="pb">${empty('⚠️','Failed to load EC2 instances')}</div></div>`;}
+}
+
+function promptLaunchEc2(){
+  openModal('🖥️ Launch EC2 Instance',`
+  <div class="warnBox">⚠️ Launching an instance will incur AWS charges on your account.</div>
+  <div class="field"><label>Instance Name *</label><input id="ec2_name" placeholder="fabricflow-app-server"/></div>
+  <div class="field"><label>Instance Type</label>
+    <select id="ec2_type">
+      <option value="t3.micro">t3.micro (Free tier eligible)</option>
+      <option value="t3.small">t3.small</option>
+      <option value="t3.medium">t3.medium (Recommended)</option>
+      <option value="t3.large">t3.large</option>
+    </select>
+  </div>`,
+  `<button class="btn btn-g" onclick="closeModal()">Cancel</button>
+   <button class="btn btn-p" onclick="launchEc2()">🚀 Launch</button>`);
+}
+
+async function launchEc2(){
+  const name=v('ec2_name'),type=document.getElementById('ec2_type').value;
+  if(!name){toast('Enter instance name','error');return;}
+  closeModal();
+  document.getElementById('cb').innerHTML=`<div style="text-align:center;padding:3rem"><span class="spinner"></span> Launching EC2 instance on AWS…</div>`;
+  try{
+    const r=await fetch(API+'/aws/ec2/launch',{method:'POST',headers:awsHeaders(),body:JSON.stringify({name,instance_type:type})});
+    const d=await r.json();
+    if(d.success){
+      pushNotif('admin-001',`☁️ EC2 instance "${name}" (${type}) launched on AWS`, 'aws',{fromId:cu.id});
+      toast(`Instance launching! ID: ${d.data.instance_id}`,'success');
+      setTimeout(()=>renderEc2(),2000);
+    }else{toast(d.error,'error');renderEc2();}
+  }catch(e){toast('Launch failed','error');renderEc2();}
+}
+
+async function terminateEc2(id,name){
+  if(!confirm(`Terminate instance "${name}" (${id})? This cannot be undone.`))return;
+  try{
+    const r=await fetch(API+'/aws/ec2/'+id,{method:'DELETE',headers:awsHeaders()});
+    const d=await r.json();
+    if(d.success){
+      pushNotif('admin-001',`🛑 EC2 instance "${name}" terminated`, 'aws',{fromId:cu.id});
+      toast('Termination initiated','info');
+      setTimeout(()=>renderEc2(),2000);
+    }else toast(d.error,'error');
+  }catch(e){toast('Failed','error');}
+}
+
+// ═══════════════════════════════════════════════════════
+//  AWS S3 PAGE
+// ═══════════════════════════════════════════════════════
+async function renderS3(){
+  setPage('S3 Buckets','Admin → AWS Cloud');
+  if(!awsReady()){document.getElementById('cb').innerHTML=noAwsWarning();return;}
+  document.getElementById('cb').innerHTML=`<div style="text-align:center;padding:2rem"><span class="spinner"></span> Loading S3 buckets…</div>`;
+  try{
+    const r=await fetch(API+'/aws/s3/buckets',{headers:awsHeaders()});
+    const d=await r.json();
+    if(!d.success){document.getElementById('cb').innerHTML=`<div class="lpErr" style="display:block">${d.error}</div>`;return;}
+    const buckets=d.data.buckets;
+    document.getElementById('cb').innerHTML=`
+    <div class="ph" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;border-bottom:none">
+      <div class="pt">📦 S3 Buckets (${d.data.count})</div>
+      <button class="btn btn-p btn-sm" onclick="promptCreateBucket()">➕ Create Bucket</button>
+    </div>
+    <div class="panel" style="border-radius:0 0 var(--radius) var(--radius);border-top:none">
+    ${buckets.length?buckets.map(b=>`
+      <div class="resCard">
+        <div class="resInfo">
+          <div class="resName">📦 ${b.name}</div>
+          <div class="resMeta">Created: ${b.created}</div>
+        </div>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn btn-xs btn-s" onclick="toast('Opening bucket in AWS Console…','info');window.open('https://s3.console.aws.amazon.com/s3/buckets/${b.name}','_blank')">Open</button>
+          <button class="btn btn-xs btn-d" onclick="deleteBucket('${b.name}')">Delete</button>
+        </div>
+      </div>`).join(''):
+      `<div class="pb">${empty('📦','No S3 buckets in this account')}</div>`}
+    </div>`;
+  }catch(e){document.getElementById('cb').innerHTML=`<div class="panel"><div class="pb">${empty('⚠️','Failed to load S3 buckets')}</div></div>`;}
+}
+
+function promptCreateBucket(){
+  const c=getAwsCreds();
+  openModal('📦 Create S3 Bucket',`
+  <div class="field"><label>Bucket Name *</label><input id="s3_name" placeholder="fabricflow-logs-prod-yourname"/>
+    <div style="font-size:.68rem;color:var(--text3);margin-top:.25rem">Must be globally unique, lowercase, 3-63 chars, no spaces</div>
+  </div>
+  <div class="infoBox">✅ Public access will be blocked automatically. Bucket will be tagged with Project:FabricFlow.</div>`,
+  `<button class="btn btn-g" onclick="closeModal()">Cancel</button>
+   <button class="btn btn-p" onclick="createBucket()">📦 Create</button>`);
+}
+
+async function createBucket(){
+  const name=v('s3_name');if(!name){toast('Enter bucket name','error');return;}
+  closeModal();
+  document.getElementById('cb').innerHTML=`<div style="text-align:center;padding:3rem"><span class="spinner"></span> Creating S3 bucket on AWS…</div>`;
+  try{
+    const r=await fetch(API+'/aws/s3/buckets',{method:'POST',headers:awsHeaders(),body:JSON.stringify({name})});
+    const d=await r.json();
+    if(d.success){
+      pushNotif('admin-001',`📦 S3 bucket "${name}" created in ${d.data.region}`, 'aws',{fromId:cu.id});
+      toast(`Bucket "${name}" created!`,'success');
+      setTimeout(()=>renderS3(),1000);
+    }else{toast(d.error,'error');renderS3();}
+  }catch(e){toast('Failed','error');renderS3();}
+}
+
+async function deleteBucket(name){
+  if(!confirm(`Delete bucket "${name}"? This is permanent.`))return;
+  try{
+    const r=await fetch(API+'/aws/s3/buckets/'+name,{method:'DELETE',headers:awsHeaders()});
+    const d=await r.json();
+    if(d.success){toast('Bucket deleted','info');renderS3();}
+    else toast(d.error,'error');
+  }catch(e){toast('Failed','error');}
+}
+
+// ═══════════════════════════════════════════════════════
+//  AWS SNS PAGE
+// ═══════════════════════════════════════════════════════
+async function renderSns(){
+  setPage('SNS Topics','Admin → AWS Cloud');
+  if(!awsReady()){document.getElementById('cb').innerHTML=noAwsWarning();return;}
+  document.getElementById('cb').innerHTML=`<div style="text-align:center;padding:2rem"><span class="spinner"></span> Loading SNS topics…</div>`;
+  try{
+    const r=await fetch(API+'/aws/sns/topics',{headers:awsHeaders()});
+    const d=await r.json();
+    const creds=getAwsCreds();
+    document.getElementById('cb').innerHTML=`
+    <div class="g2">
+      <div>
+        <div class="panel"><div class="ph"><div class="pt">📣 SNS Topics (${d.data?.count||0})</div>
+          <button class="btn btn-sm btn-p" onclick="createSnsTopic()">➕ Create Topic</button>
+        </div>
+        ${(d.data?.topics||[]).length?`<div class="pb">${d.data.topics.map(t=>{
+          const shortName=t.arn.split(':').pop();
+          return `<div class="resCard">
+            <div class="resInfo"><div class="resName">📣 ${shortName}</div><div class="resMeta" style="word-break:break-all">${t.arn}</div></div>
+            <button class="btn btn-xs btn-s" onclick="document.getElementById('sns_arn_direct').value='${t.arn}'">Use This</button>
+          </div>`;
+        }).join('')}</div>`:`<div class="pb">${empty('📣','No SNS topics yet')}</div>`}
+        </div>
+        <div class="panel"><div class="ph"><div class="pt">📧 Subscribe Email</div></div><div class="pb">
+          <div class="field"><label>Topic ARN</label><input id="sns_arn_direct" placeholder="arn:aws:sns:..." value="${creds.topicArn||''}"/></div>
+          <div class="field"><label>Email Address</label><input id="sns_email_direct" type="email" placeholder="manager@company.com"/></div>
+          <button class="btn btn-p" onclick="subscribeEmailDirect()">📧 Subscribe</button>
+        </div></div>
+      </div>
+      <div class="panel"><div class="ph"><div class="pt">🔔 How SNS Notifications Work</div></div><div class="pb">
+        <div class="infoBox">FabricFlow automatically sends SNS notifications for key events:</div>
+        ${[
+          ['📦','Order Placed','Buyer places order → SNS email to Manufacturer'],
+          ['✅','Order Accepted','Manufacturer accepts → SNS email to Buyer'],
+          ['🔄','Stage Advanced','Stage update → SNS email to Buyer'],
+          ['⚠️','Delay Detected','SLA breach → SNS email to Admin'],
+          ['☁️','AWS Event','EC2/S3 created → SNS log to Admin'],
+        ].map(([i,t,d])=>`<div style="display:flex;gap:.7rem;padding:.45rem 0;border-bottom:1px solid var(--border)">
+          <div style="font-size:1.1rem;width:22px;text-align:center">${i}</div>
+          <div><div style="font-size:.8rem;font-weight:600">${t}</div><div style="font-size:.7rem;color:var(--text3)">${d}</div></div>
+        </div>`).join('')}
+      </div></div>
+    </div>`;
+  }catch(e){document.getElementById('cb').innerHTML=`<div class="panel"><div class="pb">${empty('⚠️','Failed to load SNS')}</div></div>`;}
+}
+
+async function subscribeEmailDirect(){
+  const arn=v('sns_arn_direct'),email=v('sns_email_direct');
+  if(!arn||!email){toast('Enter ARN and email','error');return;}
+  const c=getAwsCreds();c.topicArn=arn;saveAwsCreds(c);
+  try{
+    const r=await fetch(API+'/aws/sns/subscribe',{method:'POST',headers:awsHeaders(),body:JSON.stringify({topic_arn:arn,email})});
+    const d=await r.json();
+    if(d.success)toast('Confirmation email sent! Check inbox.','success');
+    else toast(d.error,'error');
+  }catch(e){toast('Failed','error');}
+}
+
+async function renderPipelinePage(){
+  setPage('Live Pipeline','Admin → System');
+  document.getElementById('cb').innerHTML=`<div style="text-align:center;padding:2rem"><span class="spinner"></span> Loading…</div>`;
+  try{
+    const[dash,batches]=await Promise.all([apiFetch('/dashboard'),apiFetch('/fabric-batches?per_page=100')]);
+    const s=dash.summary;
+    document.getElementById('cb').innerHTML=`
+    <div class="kpig">
+      ${kpi('⚙️','Batches',s.total_batches,'linear-gradient(90deg,#3b82f6,#6366f1)')}
+      ${kpi('🔄','Active',s.active_batches,'linear-gradient(90deg,#10b981,#34d399)')}
+      ${kpi('⏰','Delayed',s.delayed_batches,'linear-gradient(90deg,#f59e0b,#fbbf24)')}
+      ${kpi('✅','Completed',s.completed,'linear-gradient(90deg,#8b5cf6,#a78bfa)')}
+    </div>
+    <div class="panel"><div class="ph"><div class="pt">🔄 Manufacturing Pipeline</div></div>
+    <div class="pipe">${pipeSteps(dash.batches_per_stage)}</div></div>
+    <div class="panel"><div class="ph"><div class="pt">📦 Active Batches (Live API)</div></div>
+    <div style="overflow-x:auto"><table>
+    <thead><tr><th>Batch ID</th><th>Type</th><th>Qty</th><th>Origin</th><th>Stage</th><th>Status</th><th>In Stage</th></tr></thead>
+    <tbody>${(batches.data||[]).map(b=>`<tr>
+      <td><code style="color:var(--blue)">${b.batch_id}</code></td>
+      <td style="text-transform:capitalize">${b.fabric_type}</td>
+      <td>${(+b.quantity_kg).toFixed(1)} kg</td>
+      <td>${b.origin}</td>
+      <td>${SICONS[b.current_stage]||''} <strong>${b.current_stage}</strong></td>
+      <td><span class="badge ${b.status==='on_track'?'b-green':b.status==='delayed'?'b-amber':b.status==='completed'?'b-violet':'b-gray'}">${b.status.replace('_',' ')}</span></td>
+      <td style="color:var(--text3);font-size:.72rem">${b.stage_entered_at?timeAgo(b.stage_entered_at):'—'}</td>
+    </tr>`).join('')}</tbody></table></div></div>`;
+  }catch(e){document.getElementById('cb').innerHTML=`<div class="panel"><div class="pb">${empty('⚠️','API unavailable')}</div></div>`;}
+}
+
+function noAwsWarning(){
+  return`<div class="panel"><div class="pb">
+    <div class="warnBox">⚠️ AWS account not connected yet.</div>
+    <div class="infoBox">To use real AWS features (EC2 management, S3 bucket creation, SNS notifications), you need to set up your AWS credentials first.</div>
+    <button class="btn btn-p" onclick="navigate('aws-setup')">🔑 Setup AWS Now →</button>
+  </div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  MANUFACTURER PAGES
+// ═══════════════════════════════════════════════════════
+async function renderMfrDash(){
+  setPage('Dashboard',`Manufacturer → ${cu.name}`);
+  const u=DB.g('users'),o=DB.g('orders');
+  const buyers=u.filter(b=>b.role==='buyer'&&b.manufacturerId===cu.id);
+  const myOrders=o.filter(x=>x.manufacturerId===cu.id);
+  const pending=myOrders.filter(x=>x.status==='pending');
+  const myNotifs=DB.g('notifications').filter(n=>n.toId===cu.id&&!n.read);
+  let apiWidget='';
+  try{const d=await apiFetch('/dashboard');apiWidget=`<div class="panel"><div class="ph"><div class="pt">🔄 Live Production</div></div><div class="pipe">${pipeSteps(d.batches_per_stage)}</div></div>`;}catch(e){}
+  document.getElementById('cb').innerHTML=`
+  <div class="kpig">
+    ${kpi('👥','My Buyers',buyers.length,'linear-gradient(90deg,#10b981,#34d399)')}
+    ${kpi('📦','Orders',myOrders.length,'linear-gradient(90deg,#3b82f6,#6366f1)')}
+    ${kpi('⏳','Pending',pending.length,'linear-gradient(90deg,#f59e0b,#fbbf24)')}
+    ${kpi('🔔','Unread',myNotifs.length,'linear-gradient(90deg,#ec4899,#f43f5e)')}
+  </div>
+  ${apiWidget}
+  <div class="g2">
+    <div class="panel"><div class="ph"><div class="pt">⏳ Pending Orders</div><button class="btn btn-sm btn-p" onclick="navigate('orders')">All Orders</button></div>
+    <div class="pb">${pending.length?pending.slice(0,5).map(ord=>{
+      const buyer=u.find(x=>x.id===ord.buyerId);
+      return `<div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;margin-bottom:.55rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem">
+          <code style="color:var(--blue);font-size:.72rem">#${ord.id.slice(-8).toUpperCase()}</code>
+          <span class="badge b-amber">Pending</span>
+        </div>
+        <div style="font-weight:600;font-size:.85rem">${ord.fabricType} · ${ord.qty} kg</div>
+        <div style="font-size:.72rem;color:var(--text2)">${ord.origin||'—'}→${ord.destination||'—'} · ${buyer?buyer.name:'?'}</div>
+        <div style="display:flex;gap:.4rem;margin-top:.6rem">
+          <button class="btn btn-xs btn-p" onclick="acceptOrd('${ord.id}')">✓ Accept</button>
+          <button class="btn btn-xs btn-d" onclick="rejectOrd('${ord.id}')">✕ Reject</button>
+        </div>
+      </div>`;
+    }).join(''):empty('🎉','No pending orders')}
+    </div></div>
+    <div class="panel"><div class="ph"><div class="pt">🔔 Recent Notifications</div><button class="btn btn-sm btn-s" onclick="navigate('notifs')">View All</button></div>
+    <div class="pb">${myNotifs.slice(0,5).map(n=>`
+      <div style="display:flex;align-items:flex-start;gap:.65rem;padding:.4rem 0;border-bottom:1px solid var(--border)">
+        <div style="font-size:1.1rem">${NOTIF_ICONS[n.type]||'🔔'}</div>
+        <div><div style="font-size:.79rem;font-weight:600">${n.msg}</div>
+        <div style="font-size:.67rem;color:var(--text3)">${timeAgo(n.createdAt)}</div></div>
+      </div>`).join('')||empty('🔔','No new notifications')}
+    </div></div>
+  </div>`;
+}
+
+function renderOrders(){
+  setPage('Orders',`Manufacturer → Orders`);
+  const orders=DB.g('orders').filter(o=>o.manufacturerId===cu.id);
+  const u=DB.g('users');
+  document.getElementById('cb').innerHTML=`<div class="panel">
+  <div class="ph"><div class="pt">📋 All Orders (${orders.length})</div></div>
+  <div style="overflow-x:auto"><table>
+    <thead><tr><th>Order</th><th>Buyer</th><th>Fabric</th><th>Qty</th><th>Route</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+    <tbody>${orders.length?orders.slice().reverse().map(ord=>{
+      const buyer=u.find(x=>x.id===ord.buyerId);
+      const s=ord.isDelayed?SM.delayed:(SM[ord.status]||SM.pending);
+      const si=STAGES.indexOf(ord.status);
+      const canAdv=STAGES.includes(ord.status)&&ord.status!=='Shipped';
+      return `<tr>
+        <td><code style="color:var(--blue)">#${ord.id.slice(-8).toUpperCase()}</code></td>
+        <td>${buyer?buyer.name:'?'}</td>
+        <td style="text-transform:capitalize">${ord.fabricType}</td>
+        <td>${ord.qty} kg</td>
+        <td style="font-size:.72rem;color:var(--text2)">${ord.origin||'—'}→${ord.destination||'—'}</td>
+        <td><span class="badge ${s.c}">${s.l}</span></td>
+        <td style="font-size:.72rem;color:var(--text3)">${fmtDate(ord.createdAt)}</td>
+        <td style="display:flex;gap:.3rem;flex-wrap:wrap">
+          ${ord.status==='pending'?`<button class="btn btn-xs btn-p" onclick="acceptOrd('${ord.id}')">Accept</button><button class="btn btn-xs btn-d" onclick="rejectOrd('${ord.id}')">Reject</button>`:''}
+          ${canAdv?`<button class="btn btn-xs btn-s" onclick="advOrd('${ord.id}','${STAGES[si+1]}')">→${STAGES[si+1]}</button> <button class="btn btn-xs" style="background:var(--red);color:#fff" onclick="reportDelay('${ord.id}')">Delay</button>`:''}
+        </td>
+      </tr>`;
+    }).join(''):`<tr><td colspan="8">${empty('📋','No orders yet')}</td></tr>`}
+    </tbody>
+  </table></div></div>`;
+}
+
+function renderShipments(){
+  setPage('Shipments',`Manufacturer → Shipments`);
+  const orders=DB.g('orders').filter(o=>o.manufacturerId===cu.id&&STAGES.includes(o.status));
+  const u=DB.g('users');
+  document.getElementById('cb').innerHTML=`${orders.length?orders.map(ord=>{
+    const buyer=u.find(x=>x.id===ord.buyerId);
+    const si=STAGES.indexOf(ord.status);
+    const s=ord.isDelayed?SM.delayed:(SM[ord.status]||{l:ord.status,c:'b-blue'});
+    return `<div class="panel"><div class="ph">
+      <div>
+        <div class="pt">🚚 #${ord.id.slice(-8).toUpperCase()} · ${ord.fabricType} · ${ord.qty} kg</div>
+        <div style="font-size:.72rem;color:var(--text2);margin-top:.15rem">Buyer: ${buyer?buyer.name:'?'} · ${ord.origin||'—'} → ${ord.destination||'—'}</div>
+      </div>
+      <div style="display:flex;gap:.55rem;align-items:center">
+        <span class="badge ${s.c}">${s.l}</span>
+        ${STAGES.includes(ord.status)&&ord.status!=='Shipped'?`<button class="btn btn-sm btn-s" onclick="advOrd('${ord.id}','${STAGES[si+1]}')">→ ${STAGES[si+1]}</button> <button class="btn btn-sm" style="background:var(--red);color:#fff" onclick="reportDelay('${ord.id}')">Delay</button>`:''}
+      </div>
+    </div>
+    <div style="padding:1.25rem">
+      <div style="display:flex;gap:3px;align-items:flex-end">
+        ${STAGES.map((st,i)=>{const done=i<si,act=i===si;return `<div style="flex:1;text-align:center">
+          <div style="font-size:1.1rem;margin-bottom:3px;opacity:${done||act?1:.3}">${SICONS[st]}</div>
+          <div style="height:7px;border-radius:4px;background:${done?'var(--green)':act?'var(--blue)':'var(--border2)'}"></div>
+          <div style="font-size:.6rem;margin-top:2px;color:${act?'var(--blue)':done?'var(--green)':'var(--text3)'};font-weight:${act?700:400}">${st}</div>
+        </div>`;}).join('')}
+      </div>
+    </div></div>`;
+  }).join(''):empty('🚚','No active shipments. Accept pending orders to start tracking.')}`;
+}
+
+function renderBuyers(){
+  setPage('My Buyers',`Manufacturer → Buyers`,`<button class="btn btn-p" onclick="openAddBuyer()">➕ Add Buyer</button>`);
+  const u=DB.g('users'),orders=DB.g('orders');
+  const buyers=u.filter(b=>b.role==='buyer'&&b.manufacturerId===cu.id);
+  const myOrders=orders.filter(o=>o.manufacturerId===cu.id);
+  document.getElementById('cb').innerHTML=`<div class="panel"><div class="ph"><div class="pt">👥 My Buyers (${buyers.length})</div></div>
+  <div style="overflow-x:auto"><table>
+    <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Orders</th><th>Joined</th><th>Actions</th></tr></thead>
+    <tbody>${buyers.length?buyers.map(b=>`<tr>
+      <td><div style="display:flex;align-items:center;gap:.6rem"><div class="av av-g">${b.name[0]}</div><span style="font-weight:600">${b.name}</span></div></td>
+      <td><code style="color:var(--green)">@${b.username}</code></td>
+      <td style="color:var(--text2)">${b.email||'—'}</td>
+      <td><span class="badge b-blue">${myOrders.filter(o=>o.buyerId===b.id).length}</span></td>
+      <td style="font-size:.72rem;color:var(--text3)">${fmtDate(b.createdAt)}</td>
+      <td><button class="btn btn-xs btn-d" onclick="delBuyer('${b.id}')">Remove</button></td>
+    </tr>`).join(''):`<tr><td colspan="6">${empty('👥','No buyers yet')}</td></tr>`}
+    </tbody>
+  </table></div></div>`;
+}
+function openAddBuyer(){
+  openModal('➕ Add Buyer',`
+  <div class="infoBox">ℹ️ The buyer will be notified when their orders are updated.</div>
+  <div class="fr"><div class="field"><label>Full Name *</label><input id="b_n" placeholder="Buyer name"/></div>
+  <div class="field"><label>Company</label><input id="b_c" placeholder="Company name"/></div></div>
+  <div class="fr"><div class="field"><label>Username *</label><input id="b_u" placeholder="buyer-username"/></div>
+  <div class="field"><label>Password *</label><input id="b_p" type="password" placeholder="Password"/></div></div>
+  <div class="fr"><div class="field"><label>Email</label><input id="b_e" type="email" placeholder="buyer@email.com"/></div>
+  <div class="field"><label>Phone</label><input id="b_ph" placeholder="+91 98765 43210"/></div></div>`,
+  `<button class="btn btn-g" onclick="closeModal()">Cancel</button><button class="btn btn-p" onclick="saveBuyer()">Add Buyer</button>`);
+}
+async function saveBuyer(){
+  const n=v('b_n'),u=v('b_u'),p=v('b_p'),e=v('b_e');
+  if(!n||!u||!p){toast('Name, username and password required','error');return;}
+  const users=DB.g('users');if(users.find(x=>x.username===u)){toast('Username taken','error');return;}
+  const id=uid();
+  const btn = document.querySelector('.modal button.btn-p');
+  if(btn) { btn.disabled = true; btn.innerHTML = 'Creating (Provisioning SNS)...'; }
+  const topicArn = await createUserSns(id, 'buyer', e);
+  users.push({id,username:u,password:p,role:'buyer',name:n,company:v('b_c'),email:e,phone:v('b_ph'),manufacturerId:cu.id,topicArn,createdAt:new Date().toISOString()});
+  DB.s('users',users);
+
+  // Send actual Welcome Email to the new buyer via SES
+  if(e) {
+      sendEmail(e, 'Welcome to FabricFlow — Buyer Account Created', `
+        <div style="font-family:sans-serif;color:#333;">
+          <h3>Welcome, ${n}!</h3>
+          <p>Your Buyer account has been successfully created by <strong>${cu.name}</strong>.</p>
+          <p><strong>Username:</strong> ${u}<br>
+          <strong>Password:</strong> ${p}</p>
+          <p>Please log in to your dashboard to start placing fabric orders.</p>
+          <p><em>Note: You may also receive a separate "AWS Notification" email shortly. Please click "Confirm Subscription" in that email so we can send you real-time order alerts!</em></p>
+        </div>
+      `);
+  }
+  
+  // Send confirmation email to the Manufacturer via SES
+  if(cu.email) {
+      sendEmail(cu.email, 'Buyer Created Successfully', `
+        <div style="font-family:sans-serif;color:#333;">
+          <h3>Manufacturer Notification</h3>
+          <p>You have successfully added a new Buyer to your network.</p>
+          <ul>
+            <li><strong>Name:</strong> ${n}</li>
+            <li><strong>Username:</strong> ${u}</li>
+            <li><strong>Email:</strong> ${e}</li>
+          </ul>
+        </div>
+      `);
+  }
+
+  closeModal();toast(`Buyer "${n}" added`,'success');renderBuyers();
+}
+function delBuyer(id){if(!confirm('Remove?'))return;DB.s('users',DB.g('users').filter(u=>u.id!==id));toast('Removed','info');renderBuyers();}
+
+// Order actions with notifications
+function acceptOrd(id){
+  const orders=DB.g('orders'),i=orders.findIndex(o=>o.id===id);
+  if(i<0)return;
+  const ord=orders[i];
+  orders[i]={...ord,status:'Processing',acceptedAt:new Date().toISOString()};
+  DB.s('orders',orders);
+  // Notify buyer
+  pushNotif(ord.buyerId,`✅ Your order #${id.slice(-8).toUpperCase()} has been accepted by ${cu.name} — now in Processing stage`,'stage',{fromId:cu.id,orderId:id});
+  const buyer=DB.g('users').find(x=>x.id===ord.buyerId);
+  if(buyer && buyer.email) {
+    sendEmail(buyer.email, 'Order Accepted & Processing', `
+      <div style="font-family:sans-serif;color:#333;">
+        <h3>Hello ${buyer.name},</h3>
+        <p>Good news! Your order for <strong>${ord.fabricType}</strong> has been officially accepted by <strong>${cu.name}</strong>.</p>
+        <p>It is now in the <strong>Processing</strong> stage. We will notify you of any further updates or delays.</p>
+      </div>
+    `);
+  }
+  // Notify admin
+  pushNotif('admin-001',`🔄 Order #${id.slice(-8).toUpperCase()} accepted by ${cu.name} → Processing`,'stage',{fromId:cu.id,orderId:id});
+  // SNS email if configured
+  sendSnsNotification(`Order Accepted — FabricFlow`,`Order #${id.slice(-8).toUpperCase()} by ${cu.name} is now in Processing stage.\nBuyer has been notified.`);
+  
+  if(buyer) publishUserSns(buyer.id, 'Order Accepted', `Your order for ${ord.fabricType} has been accepted by ${cu.name} and is now Processing.`);
+  publishUserSns(cu.id, 'Order Accepted', `You accepted the order #${id.slice(-8).toUpperCase()} from ${buyer?buyer.name:'the buyer'}.`);
+
+  toast('Order accepted → Processing','success');
+  buildNav();
+  if(pg==='orders')renderOrders();else renderMfrDash();
+}
+
+function rejectOrd(id){
+  if(!confirm('Reject this order?'))return;
+  const orders=DB.g('orders'),i=orders.findIndex(o=>o.id===id);
+  if(i<0)return;const ord=orders[i];
+  orders[i]={...ord,status:'rejected',rejectedAt:new Date().toISOString()};
+  DB.s('orders',orders);
+  pushNotif(ord.buyerId,`❌ Your order #${id.slice(-8).toUpperCase()} was rejected by ${cu.name}`,'order',{fromId:cu.id,orderId:id});
+  pushNotif('admin-001',`❌ Order #${id.slice(-8).toUpperCase()} rejected by ${cu.name}`,'order',{fromId:cu.id,orderId:id});
+  toast('Order rejected','info');
+  buildNav();
+  if(pg==='orders')renderOrders();else renderMfrDash();
+}
+
+function advOrd(id,nextStage){
+  const orders=DB.g('orders'),i=orders.findIndex(o=>o.id===id);
+  if(i<0)return;const ord=orders[i];
+  orders[i]={...ord,status:nextStage,updatedAt:new Date().toISOString()};
+  DB.s('orders',orders);
+  pushNotif(ord.buyerId,`🔄 Your order #${id.slice(-8).toUpperCase()} has advanced to <strong>${nextStage}</strong> stage — ${stageDesc(nextStage)}`,'stage',{fromId:cu.id,orderId:id});
+  pushNotif('admin-001',`🔄 Order #${id.slice(-8).toUpperCase()} → ${nextStage} (by ${cu.name})`,'stage',{fromId:cu.id,orderId:id});
+  sendSnsNotification(`Order Update — FabricFlow`,`Order #${id.slice(-8).toUpperCase()} advanced to ${nextStage}.\nManufacturer: ${cu.name}`);
+  
+  const buyer=DB.g('users').find(x=>x.id===ord.buyerId);
+  if(buyer) {
+      publishUserSns(buyer.id, 'Stage Update', `Your order #${id.slice(-8).toUpperCase()} is now in ${nextStage}.`);
+      if(buyer.email) {
+          sendEmail(buyer.email, `Stage Update: ${nextStage} — FabricFlow`, `
+            <div style="font-family:sans-serif;color:#333;">
+              <h3>Order Stage Updated</h3>
+              <p>Hello ${buyer.name}, your order for <strong>${ord.fabricType}</strong> has just been advanced to the <strong>${nextStage}</strong> stage by ${cu.name}.</p>
+              <p><em>${stageDesc(nextStage)}</em></p>
+            </div>
+          `);
+      }
+  }
+  publishUserSns(cu.id, 'Stage Updated', `Order #${id.slice(-8).toUpperCase()} advanced to ${nextStage}.`);
+
+  toast(`Advanced to ${nextStage}`,'success');
+  updateBell();
+  if(pg==='orders')renderOrders();else if(pg==='shipments')renderShipments();
+}
+
+function reportDelay(id){
+  const ord = (DB.g('orders')||[]).find(o=>o.id===id);
+  if(!ord){ toast('Order not found','error'); return; }
+
+  openModal('⚠️ Report Order Delay',
+    `<div class="field">
+       <label style="font-weight:600;color:var(--text)">Order</label>
+       <div style="font-size:.85rem;color:var(--text2);margin-bottom:.75rem">#${id.slice(-8).toUpperCase()} · ${ord.fabricType} · ${ord.qty} kg</div>
+     </div>
+     <div class="field">
+       <label style="font-weight:600;color:var(--text)">Delay Reason <span style="color:var(--red)">*</span></label>
+       <textarea id="delayReason" rows="3" style="width:100%;padding:.65rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:inherit;resize:vertical" placeholder="e.g. Raw material shortage, machine breakdown..."></textarea>
+     </div>`,
+    `<button class="btn btn-d" onclick="closeModal()">Cancel</button>
+     <button class="btn" style="background:var(--red);color:#fff" onclick="confirmDelay('${id}')">🚨 Report Delay</button>`
+  );
+  // Focus the textarea after modal opens
+  setTimeout(()=>{ const ta=document.getElementById('delayReason'); if(ta) ta.focus(); }, 100);
+}
+
+function confirmDelay(id){
+  const reasonEl = document.getElementById('delayReason');
+  const reason = reasonEl ? reasonEl.value.trim() : '';
+  if(!reason){ toast('Please enter a reason for the delay','error'); return; }
+
+  const orders=DB.g('orders'), i=orders.findIndex(o=>o.id===id);
+  if(i<0){ toast('Order not found','error'); return; }
+  const ord=orders[i];
+
+  orders[i]={...ord, delayReason: reason, isDelayed: true, updatedAt:new Date().toISOString()};
+  DB.s('orders',orders);
+  closeModal();
+
+  pushNotif(ord.buyerId,`⚠️ Your order #${id.slice(-8).toUpperCase()} has been reported DELAYED. Reason: ${reason}`,'system',{fromId:cu.id,orderId:id});
+  pushNotif('admin-001',`⚠️ Order #${id.slice(-8).toUpperCase()} delayed by ${cu.name}`,'system',{fromId:cu.id,orderId:id});
+
+  const buyer=DB.g('users').find(x=>x.id===ord.buyerId);
+  if(buyer){
+    publishUserSns(buyer.id, 'Order Delayed', `Order #${id.slice(-8).toUpperCase()} is delayed. Reason: ${reason}`);
+    if(buyer.email){
+      sendEmail(buyer.email, `⚠️ Order Delayed — FabricFlow`, `
+        <div style="font-family:sans-serif;color:#333;">
+          <h3>Order Delay Notification</h3>
+          <p>Hello ${buyer.name}, your order for <strong>${ord.fabricType}</strong> has been delayed.</p>
+          <p><strong>Reason provided by Manufacturer:</strong> ${reason}</p>
+          <p>Please log in to your dashboard to view the latest status.</p>
+        </div>
+      `);
+    }
+  }
+
+  toast(`Delay reported — buyer has been notified`, 'info');
+  updateBell();
+  if(pg==='orders') renderOrders(); else if(pg==='shipments') renderShipments();
+}
+
+function stageDesc(s){return{Processing:'Raw materials being processed',Weaving:'Yarns being woven into fabric',Dyeing:'Fabric being dyed and finished',Warehouse:'Quality check & packaging',Shipped:'Dispatched to destination!'}[s]||s;}
+
+async function sendSnsNotification(subject,msg){
+  const c=getAwsCreds();
+  if(!c.topicArn||!c.validated)return;
+  try{
+    await fetch(API+'/aws/sns/publish',{method:'POST',headers:awsHeaders(),body:JSON.stringify({topic_arn:c.topicArn,subject,message:msg})});
+  }catch(e){}// Silent fail — SNS is best-effort
+}
+
+async function sendEmail(to, subject, htmlBody){
+  if(!to) return;
+  try{
+    await fetch(API+'/email/send',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({to, subject, body:htmlBody})
+    });
+  }catch(e){} // Silent fail
+}
+
+async function createUserSns(id, role, email) {
+    if (!email || !getAwsCreds().validated) {
+        if(!getAwsCreds().validated) toast('AWS credentials not validated. SNS disabled.','error');
+        return null;
+    }
+    try {
+        const name = `fabricflow-${role}-${id}`;
+        const r1 = await fetch(API+'/aws/sns/topics', { method:'POST', headers:awsHeaders(), body:JSON.stringify({name}) });
+        const d1 = await r1.json();
+        if (d1.success) {
+            const topicArn = d1.data.topic_arn;
+            const r2 = await fetch(API+'/aws/sns/subscribe', { method:'POST', headers:awsHeaders(), body:JSON.stringify({topic_arn: topicArn, email: email}) });
+            const d2 = await r2.json();
+            if(!d2.success) toast('SNS Subscribe failed: ' + d2.error, 'error');
+            else toast(`AWS SNS confirmation email sent to ${email}!`,'success');
+            return topicArn;
+        } else {
+            toast('SNS Topic creation failed: ' + d1.error, 'error');
+        }
+    } catch(e) {
+        toast('SNS Provisioning error: ' + e.message, 'error');
+    }
+    return null;
+}
+
+async function publishUserSns(userId, subject, message) {
+    const user = DB.g('users').find(u => u.id === userId);
+    if (!user || !user.topicArn) return;
+    try {
+        await fetch(API+'/aws/sns/publish', { method:'POST', headers:awsHeaders(), body:JSON.stringify({topic_arn: user.topicArn, subject, message}) });
+    } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+//  BUYER PAGES
+// ═══════════════════════════════════════════════════════
+function renderBuyerDash(){
+  const u=DB.g('users'),orders=DB.g('orders').filter(o=>o.buyerId===cu.id);
+  const mfrs=[...new Set(orders.map(o=>o.manufacturerId))].map(id=>u.find(x=>x.id===id)).filter(Boolean);
+  const myNotifs=DB.g('notifications').filter(n=>n.toId===cu.id&&!n.read);
+  setPage('My Dashboard',`Buyer → ${cu.name}`);
+  document.getElementById('cb').innerHTML=`
+  <div class="kpig">
+    ${kpi('📦','My Orders',orders.length,'linear-gradient(90deg,#3b82f6,#6366f1)')}
+    ${kpi('🚚','In Transit',orders.filter(o=>STAGES.includes(o.status)).length,'linear-gradient(90deg,#8b5cf6,#a78bfa)')}
+    ${kpi('✅','Shipped',orders.filter(o=>o.status==='Shipped').length,'linear-gradient(90deg,#10b981,#34d399)')}
+    ${kpi('🔔','Updates',myNotifs.length,'linear-gradient(90deg,#ec4899,#f43f5e)')}
+  </div>
+  <div class="g2">
+    <div class="panel"><div class="ph"><div class="pt">🔔 Recent Updates</div><button class="btn btn-sm btn-p" onclick="navigate('notifs')">View All</button></div>
+    <div class="pb">${myNotifs.slice(0,5).map(n=>`
+      <div style="display:flex;align-items:flex-start;gap:.65rem;padding:.4rem 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="readNotif('${n.id}');renderBuyerDash()">
+        <div style="font-size:1.1rem">${NOTIF_ICONS[n.type]||'🔔'}</div>
+        <div style="flex:1"><div style="font-size:.79rem;font-weight:600" >${n.msg}</div>
+        <div style="font-size:.67rem;color:var(--text3)">${timeAgo(n.createdAt)}</div></div>
+        <div style="width:7px;height:7px;border-radius:50%;background:var(--blue);margin-top:.4rem;flex-shrink:0"></div>
+      </div>`).join('')||empty('🔔',myNotifs.length===0?'All caught up!':'')+`<div style="padding:.5rem 0;font-size:.79rem;color:var(--text3)">No new notifications</div>`}
+    </div></div>
+    <div class="panel"><div class="ph"><div class="pt">📦 Recent Orders</div><button class="btn btn-sm btn-p" onclick="navigate('my-orders')">View All</button></div>
+    <div class="pb">${orders.slice().reverse().slice(0,4).map(ord=>{
+      const mfr=u.find(x=>x.id===ord.manufacturerId);
+      const s=ord.isDelayed?SM.delayed:(SM[ord.status]||SM.pending);
+      const si=STAGES.indexOf(ord.status);
+      return `<div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;margin-bottom:.5rem">
+        <div style="display:flex;justify-content:space-between;margin-bottom:.3rem">
+          <code style="color:var(--blue);font-size:.72rem">#${ord.id.slice(-8).toUpperCase()}</code>
+          <span class="badge ${s.c}">${s.l}</span>
+        </div>
+        <div style="font-weight:600">${ord.fabricType} · ${ord.qty} kg</div>
+        <div style="font-size:.72rem;color:var(--text2)">${mfr?mfr.name:'?'}</div>
+        ${si>=0?`<div style="display:flex;gap:2px;margin-top:.5rem">${STAGES.map((_,i)=>`<div style="flex:1;height:5px;border-radius:3px;background:${i<si?'var(--green)':i===si?'var(--blue)':'var(--border2)'}"></div>`).join('')}</div>`:''}
+      </div>`;
+    }).join('')||empty('📦','No orders yet')}
+    </div></div>
+  </div>`;
+}
+
+function renderPlaceOrder(){
+  const u=DB.g('users');
+  const myMfrs=u.filter(m=>m.role==='manufacturer'&&
+    u.some(b=>b.role==='buyer'&&b.manufacturerId===m.id&&b.id===cu.id));
+  setPage('Place Order',`Buyer → New Order`);
+  document.getElementById('cb').innerHTML=`<div class="g2">
+  <div class="panel"><div class="ph"><div class="pt">📝 New Order</div></div><div class="pb">
+    ${!myMfrs.length?`<div class="warnBox">⚠️ You are not linked to any manufacturer yet. Contact your manufacturer to add you as a buyer.</div>`:`
+    <div class="field"><label>Manufacturer *</label>
+      <select id="po_m"><option value="">— Select Manufacturer —</option>${myMfrs.map(m=>`<option value="${m.id}">${m.name}${m.company?' ('+m.company+')':''}</option>`).join('')}</select>
+    </div>
+    <div class="fr">
+      <div class="field"><label>Fabric Type *</label><select id="po_f">${FABRICS.map(f=>`<option>${f}</option>`).join('')}</select></div>
+      <div class="field"><label>Quantity (kg) *</label><input id="po_q" type="number" step="0.1" min="1" placeholder="200"/></div>
+    </div>
+    <div class="fr">
+      <div class="field"><label>Origin</label><select id="po_o">${LOCS.map(l=>`<option>${l}</option>`).join('')}</select></div>
+      <div class="field"><label>Destination</label><select id="po_d">${LOCS.map(l=>`<option>${l}</option>`).join('')}</select></div>
+    </div>
+    <div class="fr">
+      <div class="field"><label>Required By</label><input id="po_dt" type="date"/></div>
+      <div class="field"><label>Priority</label><select id="po_pr"><option>normal</option><option>high</option><option>urgent</option></select></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="po_n" placeholder="Color, finish, packaging requirements…"></textarea></div>
+    <div style="display:flex;justify-content:flex-end">
+      <button class="btn btn-p" onclick="placeOrder()">🚀 Place Order</button>
+    </div>`}
+  </div></div>
+  <div class="panel"><div class="ph"><div class="pt">📣 What Happens Next</div></div><div class="pb">
+    ${[
+      ['📝','Your order is placed','Manufacturer instantly gets a notification'],
+      ['⏳','Under review','Manufacturer reviews and accepts/rejects'],
+      ['🔔','You get notified','Instant notification when order is accepted or rejected'],
+      ['⚙️','Processing starts','Manufacturer advances through stages'],
+      ['🔔','Stage updates','You get notified at every stage change'],
+      ['🚚','Shipped','Final notification when order is dispatched'],
+    ].map(([i,t,d])=>`<div style="display:flex;gap:.7rem;padding:.5rem 0;border-bottom:1px solid rgba(28,43,64,.4)">
+      <div style="font-size:1rem;width:24px;flex-shrink:0;text-align:center">${i}</div>
+      <div><div style="font-size:.8rem;font-weight:600">${t}</div><div style="font-size:.7rem;color:var(--text3)">${d}</div></div>
+    </div>`).join('')}
+  </div></div></div>`;
+}
+
+function placeOrder(){
+  const mId=v('po_m'),fab=v('po_f')||'cotton',qty=v('po_q'),orig=v('po_o'),dest=v('po_d');
+  if(!mId){toast('Select a manufacturer','error');return;}
+  if(!qty||+qty<=0){toast('Enter valid quantity','error');return;}
+  if(orig===dest){toast('Origin and destination cannot be the same','error');return;}
+  const ord={id:uid(),buyerId:cu.id,manufacturerId:mId,fabricType:fab,qty:+qty,
+    origin:orig,destination:dest,notes:v('po_n'),priority:v('po_pr'),
+    requiredBy:v('po_dt'),status:'pending',createdAt:new Date().toISOString()};
+  DB.g('orders').push(ord);
+  DB.s('orders',[...DB.g('orders').filter(o=>o.id!==ord.id),ord]);
+  // Notify manufacturer
+  const mfr=DB.g('users').find(x=>x.id===mId);
+  pushNotif(mId,`📦 New order from <strong>${cu.name}</strong> — ${fab} fabric · ${qty} kg · ${orig}→${dest}. <em>Tap to review.</em>`,'order',{fromId:cu.id,orderId:ord.id});
+  // Notify admin
+  pushNotif('admin-001',`📦 New order placed by ${cu.name} with ${mfr?mfr.name:'manufacturer'} — ${fab} · ${qty}kg`,'order',{fromId:cu.id,orderId:ord.id});
+  // SNS
+  sendSnsNotification(`New Order — FabricFlow`,`Buyer ${cu.name} placed a new order:\nFabric: ${fab}\nQty: ${qty}kg\nRoute: ${orig} → ${dest}\nManufacturer: ${mfr?mfr.name:'?'}`);
+  // Email Manufacturer
+  if(mfr && mfr.email) {
+    sendEmail(mfr.email, 'New Fabric Order Received', `
+      <div style="font-family:sans-serif;color:#333;">
+        <h3>Hello ${mfr.name},</h3>
+        <p>You received a new order from <strong>${cu.name}</strong>.</p>
+        <p><strong>Fabric:</strong> ${fab}<br>
+        <strong>Quantity:</strong> ${qty} kg<br>
+        <strong>Route:</strong> ${orig} &rarr; ${dest}</p>
+        <p>Please log in to your FabricFlow Manufacturer Dashboard to accept or reject this order.</p>
+      </div>
+    `);
+  }
+  // Email Buyer
+  if(cu.email) {
+    sendEmail(cu.email, 'Order Placed — FabricFlow', `
+      <div style="font-family:sans-serif;color:#333;">
+        <h3>Hello ${cu.name},</h3>
+        <p>Your order for ${qty}kg of ${fab} has been successfully submitted to ${mfr?mfr.name:'the manufacturer'}.</p>
+        <p>You will receive an email update once it is accepted and moves into Processing.</p>
+      </div>
+    `);
+  }
+  
+  // Specific SNS pushes
+  if(mfr) publishUserSns(mfr.id, 'New Order Received', `Buyer ${cu.name} placed a new order for ${qty}kg of ${fab}. Route: ${orig} -> ${dest}.`);
+  publishUserSns(cu.id, 'Order Placed Successfully', `Your order for ${qty}kg of ${fab} was sent to ${mfr?mfr.name:'the manufacturer'}.`);
+
+  toast('Order placed! Manufacturer has been notified.','success');
+  updateBell();
+  navigate('my-orders');
+}
+
+function renderMyOrders(){
+  const orders=DB.g('orders').filter(o=>o.buyerId===cu.id);
+  const u=DB.g('users');
+  setPage('My Orders',`Buyer → Orders`,`<button class="btn btn-p btn-sm" onclick="navigate('place-order')">➕ New Order</button>`);
+  document.getElementById('cb').innerHTML=`<div class="panel">
+  <div class="ph"><div class="pt">📦 All My Orders (${orders.length})</div></div>
+  ${orders.length?orders.slice().reverse().map(ord=>{
+    const mfr=u.find(x=>x.id===ord.manufacturerId);
+    const s=ord.isDelayed?SM.delayed:(SM[ord.status]||SM.pending);
+    const si=STAGES.indexOf(ord.status);
+    return `<div style="padding:1rem 1.1rem;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem">
+        <div>
+          <code style="color:var(--blue);font-size:.72rem">#${ord.id.slice(-8).toUpperCase()}</code>
+          <span style="font-size:.7rem;color:var(--text3);margin-left:.5rem">via ${mfr?mfr.name:'?'}</span>
+          <div style="font-size:1rem;font-weight:700;margin-top:.2rem">${ord.fabricType} · ${ord.qty} kg</div>
+          <div style="font-size:.72rem;color:var(--text2)">📍 ${ord.origin||'—'} → ${ord.destination||'—'}</div>
+        </div>
+        <div style="text-align:right">
+          <span class="badge ${s.c}">${s.l}</span>
+          <div style="font-size:.68rem;color:var(--text3);margin-top:.3rem">${fmtDate(ord.createdAt)}</div>
+        </div>
+      </div>
+      ${si>=0?`<div style="margin-top:.6rem">
+        <div style="display:flex;gap:3px;align-items:flex-end">
+          ${STAGES.map((st,i)=>{const done=i<si,act=i===si;return `<div style="flex:1;text-align:center">
+            <div style="font-size:.95rem;margin-bottom:3px;opacity:${done||act?1:.3}">${SICONS[st]}</div>
+            <div style="height:7px;border-radius:4px;background:${done?'var(--green)':act?'var(--blue)':'var(--border2)'}"></div>
+            <div style="font-size:.6rem;margin-top:2px;color:${act?'var(--blue)':done?'var(--green)':'var(--text3)'};font-weight:${act?700:400}">${st}</div>
+          </div>`;}).join('')}
+        </div>
+      </div>`:''}
+      ${ord.notes?`<div style="margin-top:.5rem;padding:.3rem .6rem;background:var(--surface);border-radius:6px;font-size:.72rem;color:var(--text2);font-style:italic">"${ord.notes}"</div>`:''}
+    </div>`;
+  }).join(''):`<div style="padding:1.5rem">${empty('📦','No orders yet')}</div>`}
+  </div>`;
+}
+
+function renderTrack(){
+  const orders=DB.g('orders').filter(o=>o.buyerId===cu.id&&STAGES.includes(o.status));
+  const u=DB.g('users');
+  setPage('Track Shipment',`Buyer → Live Tracking`);
+  if(!orders.length){document.getElementById('cb').innerHTML=`<div class="panel"><div class="pb">${empty('🔍','No active shipments to track right now')}</div></div>`;return;}
+  document.getElementById('cb').innerHTML=orders.map(ord=>{
+    const mfr=u.find(x=>x.id===ord.manufacturerId);
+    const si=STAGES.indexOf(ord.status);
+    const s=ord.isDelayed?SM.delayed:(SM[ord.status]||{l:ord.status,c:'b-blue'});
+    return `<div class="panel" style="margin-bottom:1.2rem">
+      <div class="ph">
+        <div>
+          <div class="pt">🚚 Shipment #${ord.id.slice(-8).toUpperCase()}</div>
+          <div style="font-size:.72rem;color:var(--text2);margin-top:.15rem">${ord.fabricType} · ${ord.qty} kg · ${mfr?mfr.name:'?'} · ${ord.origin||'—'} → ${ord.destination||'—'}</div>
+        </div>
+        <span class="badge ${s.c}">${s.l}</span>
+      </div>
+      <div style="padding:1.25rem 1.5rem">
+        <div style="display:flex;align-items:flex-end">
+          ${STAGES.map((st,i)=>{const done=i<si,act=i===si;return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:.45rem;position:relative">
+            ${i>0?`<div style="position:absolute;top:22px;left:0;right:50%;height:3px;background:${i<=si?'var(--green)':'var(--border2)'};z-index:0"></div>`:''}
+            ${i<4?`<div style="position:absolute;top:22px;left:50%;right:0;height:3px;background:${i<si?'var(--green)':i===si?'linear-gradient(90deg,var(--blue),var(--border2))':'var(--border2)'};z-index:0"></div>`:''}
+            <div style="width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;z-index:1;
+              ${done?'border:2px solid var(--green);background:rgba(16,185,129,.15);':
+                act?'border:2px solid var(--blue);background:rgba(59,130,246,.15);box-shadow:0 0 20px rgba(59,130,246,.5);animation:pPulse 2s infinite;':
+                'border:2px solid var(--border2);background:var(--surface);opacity:.4;'}">${SICONS[st]}</div>
+            <div style="font-size:.68rem;font-weight:${act?700:500};color:${act?'var(--blue)':done?'var(--green)':'var(--text3)'};text-align:center">${st}</div>
+            ${act?`<span class="badge b-blue" style="font-size:.58rem">Now</span>`:''}
+            ${done?`<div style="font-size:.62rem;color:var(--green)">✓</div>`:''}
+          </div>`;}).join('')}
+        </div>
+        ${ord.notes?`<div style="margin-top:1.25rem;padding:.65rem .85rem;background:var(--surface);border-radius:8px;border:1px solid var(--border);font-size:.78rem;color:var(--text2)"><strong>Your request:</strong> ${ord.notes}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  CHAT FEATURE
+// ═══════════════════════════════════════════════════════
+let activeChatUserId = null;
+function renderChatPage(){
+  setPage('Chat','Messages');
+  const u=DB.g('users');
+  const msgs=DB.g('chat_messages')||[];
+  let contacts = [];
+  if(cu.role==='buyer') contacts = u.filter(x=>x.role==='manufacturer');
+  if(cu.role==='manufacturer') contacts = u.filter(x=>x.role==='buyer'&&x.manufacturerId===cu.id);
+  
+  if(!activeChatUserId && contacts.length>0) activeChatUserId = contacts[0].id;
+  
+  // Mark active chat messages as read
+  if(activeChatUserId) {
+      let updated = false;
+      msgs.forEach(m => {
+          if (m.toId === cu.id && m.fromId === activeChatUserId && !m.read) {
+              m.read = true;
+              updated = true;
+          }
+      });
+      if(updated) {
+          DB.s('chat_messages', msgs);
+          buildNav(); // refresh global chat badge
+      }
+  }
+  
+  document.getElementById('cb').innerHTML=`
+  <div style="display:flex;height:calc(100vh - 120px);gap:1rem;">
+    <div style="width:250px;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow-y:auto;display:flex;flex-direction:column;">
+      <div style="padding:1rem;font-weight:700;border-bottom:1px solid var(--border)">Contacts</div>
+      ${contacts.length?contacts.map(c=>{
+        const unreadCount = msgs.filter(m=>m.fromId===c.id&&m.toId===cu.id&&!m.read).length;
+        const unreadBadge = unreadCount ? `<span class="niBadge blue" style="position:static;margin-left:auto">${unreadCount}</span>` : '';
+        return `
+        <div onclick="activeChatUserId='${c.id}';renderChatPage()" style="padding:1rem;cursor:pointer;border-bottom:1px solid var(--border);background:${activeChatUserId===c.id?'var(--card2)':'transparent'};display:flex;align-items:center;">
+          <div>
+              <div style="font-weight:600">${c.name}</div>
+              <div style="font-size:0.75rem;color:var(--text3)">${c.role}</div>
+          </div>
+          ${unreadBadge}
+        </div>`
+      }).join(''):'<div style="padding:1rem;color:var(--text3)">No contacts found</div>'}
+    </div>
+    
+    <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;display:flex;flex-direction:column;">
+      ${activeChatUserId?`
+        <div style="padding:1rem;font-weight:700;border-bottom:1px solid var(--border)">
+          Chat with ${u.find(x=>x.id===activeChatUserId)?.name||'Unknown'}
+        </div>
+        <div id="chatMessages" style="flex:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column;gap:0.5rem">
+          ${renderChatMessages()}
+        </div>
+        <div style="padding:1rem;border-top:1px solid var(--border);display:flex;gap:0.5rem">
+          <input id="chatInput" style="flex:1;padding:0.7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text)" placeholder="Type your message..." onkeypress="if(event.key==='Enter')sendChatMsg()">
+          <button class="btn btn-p" onclick="sendChatMsg()">Send</button>
+        </div>
+      `:`<div style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--text3)">Select a contact to chat</div>`}
+    </div>
+  </div>`;
+  
+  const cm = document.getElementById('chatMessages');
+  if(cm) cm.scrollTop = cm.scrollHeight;
+}
+
+function renderChatMessages(){
+  const msgs = DB.g('chat_messages')||[];
+  const chatMsgs = msgs.filter(m=>(m.fromId===cu.id && m.toId===activeChatUserId)||(m.fromId===activeChatUserId && m.toId===cu.id));
+  if(!chatMsgs.length) return `<div style="text-align:center;color:var(--text3);margin-top:2rem">No messages yet. Say hi!</div>`;
+  
+  return chatMsgs.map(m=>{
+    const isMe = m.fromId===cu.id;
+    return `
+      <div style="align-self:${isMe?'flex-end':'flex-start'};background:${isMe?'var(--blue)':'var(--card2)'};color:${isMe?'#fff':'var(--text)'};padding:0.6rem 1rem;border-radius:12px;max-width:70%;box-shadow:0 2px 5px rgba(0,0,0,0.1)">
+        <div style="font-size:0.9rem">${m.text}</div>
+        <div style="font-size:0.65rem;text-align:right;opacity:0.7;margin-top:0.3rem">${new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function sendChatMsg(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text || !activeChatUserId) return;
+  
+  const msgs = DB.g('chat_messages')||[];
+  msgs.push({id:uid(), fromId:cu.id, toId:activeChatUserId, text, timestamp:new Date().toISOString()});
+  DB.s('chat_messages',msgs);
+  
+  pushNotif(activeChatUserId, `💬 New message from ${cu.name}: "${text.substring(0,30)}${text.length>30?'...':''}"`, 'system', {fromId:cu.id});
+  
+  const target = DB.g('users').find(u=>u.id===activeChatUserId);
+  if(target && target.email) {
+      sendEmail(target.email, `New Chat Message from ${cu.name}`, `
+        <div style="font-family:sans-serif;color:#333;">
+          <p><strong>${cu.name}</strong> sent you a message:</p>
+          <blockquote style="border-left:4px solid #007bff;padding-left:10px;color:#555;">${text}</blockquote>
+          <p>Please log in to FabricFlow to reply.</p>
+        </div>
+      `);
+  }
+  
+  renderChatPage();
+}
+
+// ═══════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════
+function kpi(ico,lbl,val,bar){return `<div class="kc"><div class="kcBar" style="background:${bar}"></div><div class="kcIco">${ico}</div><div class="kcVal">${val}</div><div class="kcLbl">${lbl}</div></div>`;}
+function miniStat(lbl,val,c){return `<div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:.4rem .75rem;display:flex;align-items:center;gap:.4rem"><div style="font-size:.9rem;font-weight:700;color:${c}">${val}</div><div style="font-size:.67rem;color:var(--text3)">${lbl}</div></div>`;}
+function pipeSteps(perStage){return STAGES.map(n=>{const c=perStage[n]||0;return `<div class="ps ${c>0?'active':''}"><div class="sc">${SICONS[n]}</div><div class="sl" style="font-size:.65rem">${n}</div><div style="font-size:.72rem;font-weight:700;color:${c>0?'var(--blue)':'var(--text3)'}">${c}</div></div>`;}).join('');}
+function awsChip(status,label,sub,ico){return `<div class="awsChip"><div class="awsDot ${status}"></div><div style="font-size:.95rem">${ico}</div><div><div class="awsLabel">${label}</div><div class="awsSub">${sub}</div></div></div>`;}
+function empty(ico,txt){return `<div class="empty"><div class="emptyIco">${ico}</div><div class="emptyTxt">${txt}</div></div>`;}
+function openModal(t,body,foot=''){document.getElementById('gMT').textContent=t;document.getElementById('gMB').innerHTML=body;document.getElementById('gMF').innerHTML=foot;document.getElementById('gModal').classList.add('open');}
+function closeModal(){document.getElementById('gModal').classList.remove('open');}
+document.getElementById('gModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+function toast(msg,type='info'){
+  const s=document.getElementById('ts');
+  const icons={success:'✅',error:'❌',info:'ℹ️',warn:'⚠️'};
+  const el=document.createElement('div');
+  el.className=`ti ${type}`;el.innerHTML=`<span>${icons[type]}</span>${msg}`;
+  s.appendChild(el);setTimeout(()=>el.classList.add('in'),10);
+  setTimeout(()=>{el.classList.remove('in');setTimeout(()=>el.remove(),350);},4000);
+}
+async function apiFetch(path,opts={}){
+  const r=await fetch('/int/v1'+path,{headers:{'Accept':'application/json','Content-Type':'application/json'},...opts});
+  const d=await r.json();if(!r.ok)throw new Error(JSON.stringify(d));return d;
+}
+function v(id){return(document.getElementById(id)||{}).value||'';}
+function fmtDate(iso){if(!iso)return'—';return new Date(iso).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
+function timeAgo(iso){const s=Math.floor((Date.now()-new Date(iso))/1000);if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
+
+// ── BOOT ──
+initDB();
+const sess=DB.o('sess');
+if(sess){const fu=DB.g('users').find(u=>u.id===sess.id);if(fu){cu=fu;showApp();}}
+</script>
+</body>
+</html>
