@@ -24,7 +24,7 @@ pipeline {
                     // Assuming PHP/Laravel tests
                     sh '''
                     if [ -f "composer.json" ]; then
-                        composer install --no-interaction --prefer-dist
+                        # composer install --no-interaction --prefer-dist
                         # cp .env.example .env
                         # php artisan key:generate
                         # php artisan test
