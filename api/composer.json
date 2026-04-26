@@ -93,7 +93,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "fleetbase/ledger-api"
+            ]
         }
     },
     "config": {
