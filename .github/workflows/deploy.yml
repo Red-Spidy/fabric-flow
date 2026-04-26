@@ -1,0 +1,50 @@
+name: Build & Deploy FabricFlow
+
+on:
+  push:
+    branches: [main]
+
+env:
+  DOCKER_IMAGE: devansh/fabricflow-api
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKER_IMAGE }}:${{ github.run_number }}
+            ${{ env.DOCKER_IMAGE }}:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo docker pull devansh/fabricflow-api:latest
+            sudo docker stop fabricflow-api || true
+            sudo docker rm fabricflow-api || true
+            sudo docker run -d \
+              --name fabricflow-api \
+              --restart unless-stopped \
+              -p 80:8000 \
+              -e APP_ENV=production \
+              devansh/fabricflow-api:latest
+            echo "✅ Deployment complete!"
